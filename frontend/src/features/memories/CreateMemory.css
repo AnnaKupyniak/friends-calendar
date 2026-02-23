@@ -1,0 +1,13 @@
+.create-memory form{ 
+    display: flex;
+    flex-direction: column; 
+}
+
+.create-memory input , .create-memory textarea{
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+}

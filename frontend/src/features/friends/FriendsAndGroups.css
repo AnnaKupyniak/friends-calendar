@@ -1,0 +1,36 @@
+.friends-list{
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 100%;
+    padding: 30px;
+}
+.friends-list h2{
+    padding: 0.5rem 1rem;
+}
+.friends-list button{
+    background-color:#ffffff;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    border-radius: 8px;
+    padding: 0.7rem;
+}
+.friends-list button:hover{
+    background-color:#F7F8FC;
+
+}
+.friends-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.friends-header button{
+    width: auto;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}

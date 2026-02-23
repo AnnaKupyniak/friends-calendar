@@ -1,0 +1,16 @@
+.calendar-container{
+    background-color: #ffffff;
+    margin-top: 1rem;
+    border-radius: 8px;
+}
+
+.show-all-btn {
+    display: block;
+    margin: 0 auto;
+    border: none;
+    border-radius: 1.2rem;
+    padding: 0.5rem;
+    background-color: #EFEAFE;
+    margin-bottom: 1rem;
+}
+

@@ -1,0 +1,107 @@
+.memories-header {
+    background-color: #F8F7FF; 
+    border-radius: 12px;
+    width: 100%;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.memories-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #333333;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.add-memory-btn {
+    background-color: #9381FF;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.add-memory-btn:hover {
+    background-color: #B8B8FF;
+}
+
+.settings-menu-container {
+    position: relative;
+}
+
+.settings-dots-btn {
+    background: #FFEEDD;
+    border: none;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #723D46;
+}
+
+.settings-dots-btn:hover {
+    background: #FFD8BE; 
+}
+
+.settings-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: #F8F7FF;
+    border: 1px solid #FFEEDD;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    z-index: 100;
+    overflow: hidden;
+    padding: 6px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dropdown-item {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #472D30; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdown-item:hover {
+    background: #FFEEDD;
+}
+
+.dropdown-item.danger {
+    color: #E26D5C;
+}
+
+.dropdown-item.danger:hover {
+    background: #FCECDD;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

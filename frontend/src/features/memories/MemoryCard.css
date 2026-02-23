@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --accent: #F5811F;
+  --accent-soft: #CAA8F5;
+  --accent-strong: #592E83;
+
+  --bg: #FFF8ED;
+  --card-bg: #FFFFFF;
+  --border: #E9DDF8;
+
+  --danger: #D94F30;
+
+  --text-primary: #2D1B3D;
+  --text-muted: #6E5A85;
+
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+/* ---------- CARD ---------- */
+
+.memory-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(89, 46, 131, 0.08);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 1rem;
+}
+
+.memory-card:hover {
+  box-shadow: 0 10px 30px rgba(89, 46, 131, 0.18);
+  transform: translateY(-3px);
+}
+
+/* ---------- IMAGE ---------- */
+
+.memory-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.memory-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.memory-card:hover .memory-image img {
+  transform: scale(1.04);
+}
+
+/* ---------- CONTENT ---------- */
+
+.memory-content {
+  padding: 18px 20px 16px;
+}
+
+.memory-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.memory-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* ---------- CATEGORY ---------- */
+
+.category-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-family: 'DM Mono', monospace;
+  color: var(--accent-strong);
+  background: rgba(202, 168, 245, 0.25);
+  border: 1px solid rgba(202, 168, 245, 0.45);
+  border-radius: 100px;
+  padding: 3px 12px;
+}
+
+/* ---------- META ---------- */
+
+.memory-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.memory-date,
+.memory-place {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.memory-description {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+/* ---------- FOOTER ---------- */
+
+.memory-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.memory-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: 0.15s ease;
+}
+
+.action-link.edit {
+  color: var(--accent-strong);
+}
+
+.action-link.edit:hover {
+  background: rgba(202, 168, 245, 0.3);
+}
+
+.action-link.delete {
+  color: var(--danger);
+}
+
+.action-link.delete:hover {
+  background: rgba(217, 79, 48, 0.12);
+}
+
+.memory-created {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ---------- EDIT FORM ---------- */
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modern-input {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 13px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.modern-input:focus {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px rgba(202, 168, 245, 0.35);
+}
+
+.modern-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ---------- BUTTONS ---------- */
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-save {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: linear-gradient(135deg, #FEB702, #F5811F);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(245, 129, 31, 0.35);
+  transition: 0.2s ease;
+}
+
+.btn-save:hover {
+  box-shadow: 0 8px 24px rgba(245, 129, 31, 0.5);
+}
+
+.btn-save:active,
+.btn-cancel:active {
+  transform: scale(0.96);
+}
+
+.btn-cancel {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background: rgba(202, 168, 245, 0.15);
+}

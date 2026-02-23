@@ -1,0 +1,34 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+li {
+  list-style: none;
+}
+body{
+  background-color: #eff1fc !important;
+}
+:root {
+  --accent: #F5811F;
+  --accent-soft: #CAA8F5;
+  --accent-strong: #592E83;
+
+  --bg: #FFF8ED;
+  --surface: #FFFFFF;
+  --border: #E9DDF8;
+
+  --danger: #D94F30;
+
+  --text-primary: #2D1B3D;
+  --text-muted: #6E5A85;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-sm: 0 2px 8px rgba(89, 46, 131, 0.06);
+  --shadow-md: 0 6px 24px rgba(89, 46, 131, 0.12);
+
+  --transition: 0.18s ease;
+}
