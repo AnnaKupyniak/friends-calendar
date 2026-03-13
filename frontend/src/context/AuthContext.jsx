@@ -9,13 +9,20 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   async function register(data) {
-    try {
-      await axios.post(`${API_URL}/auth/register`, data, { withCredentials: true });
-      await getMe();
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-    }
+  try {
+    await axios.post(`${API_URL}/auth/register`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true 
+    });
+    
+    await getMe();
+  } catch (err) {
+    console.log("Помилка реєстрації:", err.response?.data || err.message);
+    throw err;
   }
+}
 
   async function login(data) {
     try {

@@ -6,7 +6,7 @@ export default function CreateMemory({ onClose }) {
   const { selectedEntity, addCategoryToFriendship, addCategoryToGroup } =
     useContext(FriendsContext);
   const { createMemory } = useContext(MemoriesContext);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const entityTypeMap = {
@@ -64,15 +64,20 @@ export default function CreateMemory({ onClose }) {
     formData.append("category", categoryValue || "");
     formData.append("description", event.target.description.value);
 
-    if (selectedFile) {
-      formData.append("photo", selectedFile);
+    // Додаємо всі вибрані файли
+    if (selectedFiles.length > 0) {
+      selectedFiles.forEach((file) => {
+        formData.append("photos", file);
+      });
     }
 
     console.log("=== FormData contents ===");
     for (let pair of formData.entries()) {
-      console.log(
-        pair[0] + ": " + (pair[0] === "photo" ? pair[1].name : pair[1]),
-      );
+      if (pair[0] === "photos") {
+        console.log(`photos: ${pair[1].name}`);
+      } else {
+        console.log(pair[0] + ": " + pair[1]);
+      }
     }
 
     try {
@@ -93,10 +98,17 @@ export default function CreateMemory({ onClose }) {
   }
 
   function handleFileChange(event) {
-    const file = event.target.files[0];
-    setSelectedFile(file);
+    const files = Array.from(event.target.files);
+    setSelectedFiles(files);
   }
 
+  function removeFile(indexToRemove) {
+    setSelectedFiles(
+      selectedFiles.filter((_, index) => index !== indexToRemove),
+    );
+  }
+  console.log("entityId:", selectedEntity?.data._id);
+  console.log("entityType:", entityTypeMap[selectedEntity?.type]);
   return (
     <form className="card shadow-sm p-4" onSubmit={handleSubmit}>
       <h4 className="mb-3">Створити спогад</h4>
@@ -165,16 +177,41 @@ export default function CreateMemory({ onClose }) {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Фото</label>
+        <label className="form-label">Фото (можна вибрати декілька)</label>
         <input
           type="file"
-          name="photo"
+          name="photos"
           accept="image/*"
           className="form-control"
           onChange={handleFileChange}
+          multiple
         />
-        {selectedFile && (
-          <div className="form-text">Вибрано: {selectedFile.name}</div>
+
+        {selectedFiles.length > 0 && (
+          <div className="mt-2">
+            <small className="text-muted">
+              Вибрано файлів: {selectedFiles.length}
+            </small>
+            <ul className="list-group mt-2">
+              {selectedFiles.map((file, index) => (
+                <li
+                  key={index}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <span>
+                    {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => removeFile(index)}
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 

@@ -13,6 +13,7 @@ export default function Register() {
     password: "",
     avatar: null,
   });
+  const [error, setError] = useState("");
 
   function handleChange(e) {
     if (e.target.type === "file") {
@@ -24,8 +25,24 @@ export default function Register() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await register(formData);
-    navigate("/");
+    setError("");
+
+    const data = new FormData();
+    data.append("username", formData.username);
+    data.append("fullName", formData.fullName);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    if (formData.avatar) data.append("avatar", formData.avatar);
+
+    try {
+      await register(data);
+      navigate("/");
+    } catch (err) {
+      const message =
+        err.response?.data?.error ||
+        "Помилка реєстрації. Можливо, такий email вже зайнятий.";
+      setError(message);
+    }
   }
 
   return (
@@ -43,7 +60,8 @@ export default function Register() {
         <h3
           className="text-center mb-4"
           style={{
-            background: "linear-gradient(135deg, var(--accent), var(--accent-strong))",
+            background:
+              "linear-gradient(135deg, var(--accent), var(--accent-strong))",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             fontWeight: 600,
@@ -51,11 +69,21 @@ export default function Register() {
         >
           Реєстрація
         </h3>
-
+        {error && (
+          <div
+            className="alert alert-danger py-2 small"
+            style={{ borderRadius: "10px" }}
+          >
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           {["username", "fullName", "email", "password"].map((field, idx) => (
             <div className="mb-3" key={idx}>
-              <label className="form-label" style={{ color: "var(--text-primary)" }}>
+              <label
+                className="form-label"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {field === "fullName"
                   ? "Прізвище та ім'я"
                   : field.charAt(0).toUpperCase() + field.slice(1)}
@@ -67,8 +95,8 @@ export default function Register() {
                   field === "email"
                     ? "email"
                     : field === "password"
-                    ? "password"
-                    : "text"
+                      ? "password"
+                      : "text"
                 }
                 className="form-control"
                 onChange={handleChange}
@@ -84,7 +112,10 @@ export default function Register() {
           ))}
 
           <div className="mb-4">
-            <label className="form-label" style={{ color: "var(--text-primary)" }}>
+            <label
+              className="form-label"
+              style={{ color: "var(--text-primary)" }}
+            >
               Аватар
             </label>
 

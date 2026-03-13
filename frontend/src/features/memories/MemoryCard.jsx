@@ -7,6 +7,7 @@ export default function MemoryCard({ memory }) {
   const { deleteMemory, updateMemory } = useContext(MemoriesContext);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [formData, setFormData] = useState({
     title: memory.title,
     description: memory.description,
@@ -15,11 +16,27 @@ export default function MemoryCard({ memory }) {
     category: memory.category || "",
   });
 
-  const imageUrl = memory.imageUrl
-    ? memory.imageUrl.startsWith("http")
-      ? memory.imageUrl
-      : `${API_URL.split("/api")[0]}/${memory.imageUrl.replace(/^\/+/, "")}`
-    : null;
+  // Підтримка як imageUrls (масив), так і imageUrl (старе поле)
+  const getImageUrls = () => {
+    const baseUrl = API_URL.split("/api")[0];
+
+    if (memory.imageUrls && memory.imageUrls.length > 0) {
+      return memory.imageUrls.map((url) =>
+        url.startsWith("http") ? url : `${baseUrl}/${url.replace(/^\/+/, "")}`
+      );
+    }
+
+    if (memory.imageUrl) {
+      const url = memory.imageUrl.startsWith("http")
+        ? memory.imageUrl
+        : `${baseUrl}/${memory.imageUrl.replace(/^\/+/, "")}`;
+      return [url];
+    }
+
+    return [];
+  };
+
+  const imageUrls = getImageUrls();
 
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("uk-UA", {
@@ -38,11 +55,27 @@ export default function MemoryCard({ memory }) {
     setIsEditing(false);
   };
 
+  const prevImage = () =>
+    setCurrentImageIndex((prev) => (prev - 1 + imageUrls.length) % imageUrls.length);
+
+  const nextImage = () =>
+    setCurrentImageIndex((prev) => (prev + 1) % imageUrls.length);
+
   return (
     <article className="memory-card">
-      {imageUrl && (
+      {imageUrls.length > 0 && (
         <div className="memory-image">
-          <img src={imageUrl} alt={memory.title} />
+          <img src={imageUrls[currentImageIndex]} alt={memory.title} />
+
+          {imageUrls.length > 1 && (
+            <div className="image-navigation">
+              <button className="img-nav-btn" onClick={prevImage}>‹</button>
+              <span className="image-counter">
+                {currentImageIndex + 1} / {imageUrls.length}
+              </span>
+              <button className="img-nav-btn" onClick={nextImage}>›</button>
+            </div>
+          )}
         </div>
       )}
 

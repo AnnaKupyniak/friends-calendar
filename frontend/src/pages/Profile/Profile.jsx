@@ -1,23 +1,36 @@
-import { useContext, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { FriendsContext } from "../../context/FriendsContext";
+import { MemoriesContext } from "../../context/MemoriesContext";
+import Calendar from "../../components/Calendar/Calendar";
+import MemoryCard from "../../features/memories/MemoryCard"
 
 export default function Profile() {
   const { user, logout } = useContext(AuthContext);
+  const { friendships, groups } = useContext(FriendsContext);
+  const { memories } = useContext(MemoriesContext);
   const [selectedDate, setSelectedDate] = useState(null);
 
   if (!user) {
     return <div className="text-center mt-5">Завантаження...</div>;
   }
 
+  const filteredMemories = memories.filter((m) => {
+    if (!selectedDate) return true;
+    return dayjs(m.date).format("YYYY-MM-DD") === selectedDate;
+  });
   return (
     <>
       <div className="container mt-4">
         <div className="row">
           <div className="col-md-4 col-lg-3">
             <div className="card shadow-sm text-center p-3">
-
               <img
-                src={user.avatar ? `http://localhost:5000${user.avatar}` : '/default-avatar.png'}
+                src={
+                  user.avatar
+                    ? `http://localhost:5000/uploads/${user.avatar}`
+                    : "http://localhost:5000/uploads/default-avatar.png"
+                }
                 alt="Profile"
                 className="rounded-circle mx-auto mb-3"
                 style={{ width: "120px", height: "120px", objectFit: "cover" }}
@@ -29,15 +42,15 @@ export default function Profile() {
 
               <div className="d-flex justify-content-around my-3">
                 <div>
-                  <div className="fw-bold">0</div>
+                  <div className="fw-bold">{friendships.length}</div>
                   <small className="text-muted">Друзів</small>
                 </div>
                 <div>
-                  <div className="fw-bold">0</div>
+                  <div className="fw-bold">{groups.length}</div>
                   <small className="text-muted">Груп</small>
                 </div>
                 <div>
-                  <div className="fw-bold">0</div>
+                  <div className="fw-bold">{memories.length}</div>
                   <small className="text-muted">Спогадів</small>
                 </div>
               </div>
@@ -48,17 +61,29 @@ export default function Profile() {
             </div>
           </div>
           <div className="col-md-8 col-lg-9 mt-4 mt-md-0">
-            <div className="card shadow-sm p-4">
-              <h5>Мій календар</h5>
-              <p className="text-muted">Календар тимчасово вимкнений</p>
-            </div>
-
             <div className="card shadow-sm p-4 mt-3">
-              <h5>Нещодавні спогади</h5>
-              <p className="text-muted">Спогади поки що відсутні</p>
+              <h5>Мій календар</h5>
+              {user ? (
+                <Calendar currentUser={user} />
+              ) : (
+                <p className="text-muted">Завантаження...</p>
+              )}
+            </div>
+            <div className="card shadow-sm p-4 mt-3">
+              <h5>
+                {selectedDate
+                  ? `Спогади за ${selectedDate}`
+                  : "Нещодавні спогади"}
+              </h5>
+              {filteredMemories.length > 0 ? (
+                filteredMemories.map((m) => (
+                  <MemoryCard key={m._id} memory={m} />
+                ))
+              ) : (
+                <p className="text-muted">На цей день спогадів немає</p>
+              )}
             </div>
           </div>
-
         </div>
       </div>
     </>

@@ -148,12 +148,12 @@ export default function NewGroup({ onClose, onAddGroup }) {
         <div className="d-flex justify-content-end gap-2">
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn"
             onClick={onClose}
           >
             Скасувати
           </button>
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn">
             Створити
           </button>
         </div>

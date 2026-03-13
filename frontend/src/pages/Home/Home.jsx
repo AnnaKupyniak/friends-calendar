@@ -36,13 +36,7 @@ export default function Home() {
       <div className="home-sidebar">
         <FriendsAndGroups />
 
-        {selectedEntity?.type === "friend" && (
-          <Calendar selectedFriend={selectedEntity.data.user} />
-        )}
-
-        {selectedEntity?.type === "group" && (
-          <Calendar selectedGroup={selectedEntity.data} />
-        )}
+        <Calendar />
       </div>
 
       <div className="home-main">

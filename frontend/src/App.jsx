@@ -32,7 +32,11 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile />
+              <FriendsProvider>
+                <MemoriesProvider>
+                  <Profile />
+                </MemoriesProvider>
+              </FriendsProvider>
             </ProtectedRoute>
           }
         />

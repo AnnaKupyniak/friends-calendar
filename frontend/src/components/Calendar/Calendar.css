@@ -14,3 +14,44 @@
     margin-bottom: 1rem;
 }
 
+.calendar-container {
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+/* Прибираємо стандартні бордери MUI */
+.MuiDateCalendar-root {
+  width: 100% !important;
+  max-height: none !important;
+}
+
+/* Стиль для днів зі спогадами */
+.day-with-memory {
+  background-color: #ffcc00 !important;
+  color: #000 !important;
+  font-weight: bold !important;
+  border: 2px solid #fff !important; /* щоб виділялося */
+}
+
+/* Стиль при наведенні */
+.day-with-memory:hover {
+  background-color: #f5811f !important;
+  color: #fff !important;
+}
+
+/* Кнопка "Показати всі" */
+.show-all-btn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 8px;
+  transition: all 0.3s;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.show-all-btn:hover {
+  background: #e9ecef;
+  color: #333;
+}
