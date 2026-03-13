@@ -10,9 +10,9 @@ const MemorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    imageUrl: {
+    imageUrls: [{ 
         type: String,
-    },
+    }],
     date: {
         type: Date,
         required: true

@@ -1,15 +1,31 @@
 const Memory = require('../models/Memory');
 const Friendship = require('../models/Friendship');
 const Group = require('../models/Group');
+const upload = require('../middleware/upload');
+
+const uploadMiddleware = (req, res, next) => {
+  upload.array('photos', 10)(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE')
+        return res.status(400).json({ success: false, message: 'File too large. Max 5MB.' });
+      if (err.code === 'LIMIT_FILE_COUNT')
+        return res.status(400).json({ success: false, message: 'Too many files. Max 10.' });
+      return res.status(400).json({ success: false, message: err.message });
+    } else if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    next();
+  });
+};
 
 exports.createMemory = async (req, res) => {
   try {
     const { entityId, entityType, title, description, date, place, category } = req.body;
 
     if (!entityId || !entityType || !title || !description || !date || !place) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please provide all required fields: entityId, entityType, title, description, date, place' 
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide all required fields: entityId, entityType, title, description, date, place'
       });
     }
 
@@ -22,7 +38,7 @@ exports.createMemory = async (req, res) => {
       if (!friendship) {
         return res.status(404).json({ success: false, message: 'Friendship not found' });
       }
-      
+
       const userId = req.user.id;
       if (!friendship.users.some(u => u.toString() === userId)) {
         return res.status(403).json({ success: false, message: 'You are not part of this friendship' });
@@ -32,28 +48,26 @@ exports.createMemory = async (req, res) => {
       if (!group) {
         return res.status(404).json({ success: false, message: 'Group not found' });
       }
-      
+
       const userId = req.user.id;
       if (!group.members.some(u => u.toString() === userId)) {
         return res.status(403).json({ success: false, message: 'You are not a member of this group' });
       }
     }
 
-    let imageUrl = '';
-    if (req.file) {
-      // Створюємо URL для доступу до файлу
-      imageUrl = `/uploads/${req.file.filename}`;
-      console.log("Image saved:", imageUrl);
+    let imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+      console.log("Images saved:", imageUrls);
     }
 
-    // Створення спогаду
     const memory = await Memory.create({
       title,
       description,
       date,
       place,
       category: category || '',
-      imageUrl: imageUrl,
+      imageUrls: imageUrls,
       entityType,
       entity: entityId
     });
@@ -61,10 +75,10 @@ exports.createMemory = async (req, res) => {
     res.status(201).json({ success: true, data: memory });
   } catch (err) {
     console.error('Error creating memory:', err);
-    res.status(400).json({ 
-      success: false, 
-      message: 'Error creating memory', 
-      error: err.message 
+    res.status(400).json({
+      success: false,
+      message: 'Error creating memory',
+      error: err.message
     });
   }
 };
@@ -132,14 +146,14 @@ exports.updateMemory = async (req, res) => {
 
 exports.deleteMemory = async (req, res) => {
   const memoryId = req.params.id;
-  const userId = req.user.id; 
+  const userId = req.user.id;
 
   try {
     const memory = await Memory.findById(memoryId);
     if (!memory) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Memory not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Memory not found'
       });
     }
 
@@ -150,7 +164,7 @@ exports.deleteMemory = async (req, res) => {
       const friendship = await Friendship.findById(memory.entity);
       entityExists = !!friendship;
       hasAccess = friendship && friendship.users.some(u => u.toString() === userId);
-    } 
+    }
     else if (memory.entityType === 'Group') {
       const group = await Group.findById(memory.entity);
       entityExists = !!group;
@@ -158,32 +172,32 @@ exports.deleteMemory = async (req, res) => {
     }
 
     if (!entityExists) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Associated friendship or group no longer exists' 
+      return res.status(404).json({
+        success: false,
+        message: 'Associated friendship or group no longer exists'
       });
     }
 
     if (!hasAccess) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'You are not authorized to delete this memory' 
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to delete this memory'
       });
     }
 
     await Memory.findByIdAndDelete(memoryId);
 
-    res.status(200).json({ 
-      success: true, 
-      message: 'Memory deleted successfully' 
+    res.status(200).json({
+      success: true,
+      message: 'Memory deleted successfully'
     });
 
   } catch (err) {
     console.error('Error deleting memory:', err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error deleting memory', 
-      error: err.message 
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting memory',
+      error: err.message
     });
   }
 };

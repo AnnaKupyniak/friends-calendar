@@ -1,8 +1,12 @@
 const crypto = require('crypto');
 const User = require('../models/User');
 
-exports.register = async(req,res) =>{
-    const {username, fullName ,email, password, avatar} = req.body;
+exports.register = async (req, res) => {
+    const { username, fullName, email, password } = req.body;
+
+    const avatar = req.file
+        ? req.file.filename
+        : "default-avatar.png";
 
     const user = await User.create({
         username,
@@ -10,11 +14,10 @@ exports.register = async(req,res) =>{
         email,
         password,
         avatar
-    })
+    });
 
     sendTokenResponse(user, 200, res);
-}
-
+};
 exports.login = async(req,res) =>{
     const {email, password} = req.body;
 
