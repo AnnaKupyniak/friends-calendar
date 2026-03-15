@@ -10,6 +10,7 @@ import { FriendsProvider } from "./context/FriendsContext.jsx";
 import { MemoriesProvider } from "./context/MemoriesContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Comments from "./pages/Comments/Comments.jsx";
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route path="/comments/:id" element={<ProtectedRoute>
+          <FriendsProvider>
+                <MemoriesProvider>
+                  <Comments />
+                </MemoriesProvider>
+              </FriendsProvider>
+        </ProtectedRoute>} />
       </Routes>
     </AuthProvider>
   );

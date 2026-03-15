@@ -9,9 +9,8 @@
 }
 
 .modal-content {
-    background: white;
+    background: var(--surface) !important;
     padding: 20px;
     border-radius: 12px;
     max-width: 500px;
-    width: 100%;
 }

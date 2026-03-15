@@ -27,7 +27,7 @@ export function FriendsProvider({ children }) {
 
   async function fetchFriends() {
     try {
-      const res = await axios.get(`${API_URL}/users/friends`, {
+      const res = await axios.get(`${API_URL}/api/users/friends`, {
         withCredentials: true,
       });
       console.log("Friends data from server:", res.data);
@@ -39,7 +39,7 @@ export function FriendsProvider({ children }) {
 
   async function fetchGroups() {
     try {
-      const res = await axios.get(`${API_URL}/groups`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/api/groups`, { withCredentials: true });
       setGroups(res.data.groups || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -61,7 +61,7 @@ export function FriendsProvider({ children }) {
 
   async function removeFriend(friendId) {
     try {
-      await axios.delete(`${API_URL}/users/friends?friendId=${friendId}`, {
+      await axios.delete(`${API_URL}/api/users/friends?friendId=${friendId}`, {
         withCredentials: true,
       });
 
@@ -81,7 +81,7 @@ export function FriendsProvider({ children }) {
     }
     try {
       const res = await axios.get(
-        `${API_URL}/users/friends/find?query=${encodeURIComponent(query)}`,
+        `${API_URL}/api/users/friends/find?query=${encodeURIComponent(query)}`,
         { withCredentials: true },
       );
       setSearchResults(res.data);
@@ -101,7 +101,7 @@ export function FriendsProvider({ children }) {
 
   async function deleteGroup(groupId) {
     try {
-      await axios.delete(`${API_URL}/groups/${groupId}`, { withCredentials: true });
+      await axios.delete(`${API_URL}/api/groups/${groupId}`, { withCredentials: true });
       setSelectedEntity((prev) => (prev?.data?._id === groupId ? null : prev));
       fetchGroups();
     } catch (err) {
@@ -111,7 +111,7 @@ export function FriendsProvider({ children }) {
 
   async function updateGroup(groupId, updatedData) {
     try {
-      await axios.put(`${API_URL}/groups/${groupId}`, updatedData, {
+      await axios.put(`${API_URL}/api/groups/${groupId}`, updatedData, {
         withCredentials: true,
       });
       fetchGroups();
@@ -123,7 +123,7 @@ export function FriendsProvider({ children }) {
   async function addMembersToGroup(groupId, userIds) {
     try {
       const res = await axios.post(
-        `${API_URL}/groups/${groupId}/members`,
+        `${API_URL}/api/groups/${groupId}/members`,
         { userIds },
         { withCredentials: true },
       );
@@ -149,7 +149,7 @@ export function FriendsProvider({ children }) {
 
   async function removeMemberFromGroup(groupId, memberId) {
     try {
-      await axios.delete(`${API_URL}/groups/${groupId}/members/${memberId}`, {
+      await axios.delete(`${API_URL}/api/groups/${groupId}/members/${memberId}`, {
         withCredentials: true,
       });
 
@@ -175,7 +175,7 @@ export function FriendsProvider({ children }) {
   async function addCategoryToFriendship(friendshipId, category) {
     try {
       const res = await axios.post(
-        `${API_URL}/users/friends/${friendshipId}/categories`,
+        `${API_URL}/api/users/friends/${friendshipId}/categories`,
         { category },
         { withCredentials: true },
       );
@@ -210,7 +210,7 @@ export function FriendsProvider({ children }) {
   async function addCategoryToGroup(groupId, category) {
     try {
       const res = await axios.post(
-        `${API_URL}/groups/${groupId}/categories`,
+        `${API_URL}/api/groups/${groupId}/categories`,
         { category },
         { withCredentials: true },
       );

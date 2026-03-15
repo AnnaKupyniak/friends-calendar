@@ -1,72 +1,102 @@
 .friends-list {
-    background-color: #ffffff;
-    border-radius: 8px;
-    width: 100%;
-    padding: 30px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  padding: 20px;
 }
 
-.friends-list h2 {
-    padding: 0.5rem 1rem;
-}
-
+/* Заголовок секції */
 .friends-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
 }
 
-.friends-header button {
-    width: auto;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+.friends-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
 }
 
-.friend-button {
-    border: none;
-    width: 100%;
-    text-align: left;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: white;
-    color: black;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-}
-
-.friend-button img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.friend-button:hover {
-    background-color: #F7F8FC;
-}
-
-.active-item {
-    background-color: #e8eaf6;
-    color: rgb(15, 15, 15);
-    font-weight: 500;
-}
-
+/* Кнопка "Додати друга" / "Створити групу" */
 .action-button {
-    background-color: #ffffff;
-    border: none;
-    color: #000;
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--accent-strong);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
 }
 
 .action-button:hover {
-    background-color: #F7F8FC;
-    border-color: #adb5bd;
+  background: var(--accent-strong);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+/* Кнопка друга */
+.friend-button {
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.friend-button img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+}
+
+.friend-button span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-button:hover {
+  background: var(--bg);
+}
+
+/* Активний елемент */
+.active-item {
+  background: linear-gradient(135deg, var(--accent-strong), #7c3aed) !important;
+  color: #fff !important;
+}
+
+.active-item img {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.active-item span {
+  color: #fff;
+}
+
+/* Розділювач між секціями */
+.friends-list > div + div {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
 }

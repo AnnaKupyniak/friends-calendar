@@ -3,21 +3,6 @@ const Friendship = require('../models/Friendship');
 const Group = require('../models/Group');
 const upload = require('../middleware/upload');
 
-const uploadMiddleware = (req, res, next) => {
-  upload.array('photos', 10)(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      if (err.code === 'LIMIT_FILE_SIZE')
-        return res.status(400).json({ success: false, message: 'File too large. Max 5MB.' });
-      if (err.code === 'LIMIT_FILE_COUNT')
-        return res.status(400).json({ success: false, message: 'Too many files. Max 10.' });
-      return res.status(400).json({ success: false, message: err.message });
-    } else if (err) {
-      return res.status(400).json({ success: false, message: err.message });
-    }
-    next();
-  });
-};
-
 exports.createMemory = async (req, res) => {
   try {
     const { entityId, entityType, title, description, date, place, category } = req.body;
@@ -82,6 +67,70 @@ exports.createMemory = async (req, res) => {
     });
   }
 };
+
+exports.createComment = async (req, res) => {
+  try {
+    const memoryId = req.params.id;
+    const { text } = req.body;
+
+    if (!memoryId || !text?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'memoryId and text are required'
+      });
+    }
+
+    const memory = await Memory.findById(memoryId);
+    if (!memory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Memory not found'
+      });
+    }
+
+    memory.comments.push({
+      text: text.trim(),
+      author: req.user.fullName || 'Анонім'
+    });
+
+    await memory.save();
+
+    res.status(201).json({
+      success: true,
+      data: memory.comments[memory.comments.length - 1]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({
+      success: false,
+      message: 'Error creating comment',
+      error: err.message
+    });
+  }
+};
+
+exports.getComments = async(req,res) =>{
+  try{
+    const memoryId = req.params.id;
+    const memory = await Memory.findById(memoryId);
+    if (!memory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Memory not found'
+      });
+    }
+
+    res.status(200).json({success: true, data: memory.comments})
+
+  }catch (err) {
+    console.error(err);
+    res.status(400).json({
+      success: false,
+      message: 'Error comment',
+      error: err.message
+    });
+  }
+}
 
 exports.getAllUserMemories = async (req, res) => {
   try {

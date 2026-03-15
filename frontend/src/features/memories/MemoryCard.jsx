@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { MemoriesContext } from "../../context/MemoriesContext";
 import "./MemoryCard.css";
+import { useNavigate } from "react-router-dom";
 
 export default function MemoryCard({ memory }) {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -15,14 +16,13 @@ export default function MemoryCard({ memory }) {
     place: memory.place,
     category: memory.category || "",
   });
-
-  // Підтримка як imageUrls (масив), так і imageUrl (старе поле)
+  const navigate = useNavigate();
   const getImageUrls = () => {
     const baseUrl = API_URL.split("/api")[0];
 
     if (memory.imageUrls && memory.imageUrls.length > 0) {
       return memory.imageUrls.map((url) =>
-        url.startsWith("http") ? url : `${baseUrl}/${url.replace(/^\/+/, "")}`
+        url.startsWith("http") ? url : `${baseUrl}/${url.replace(/^\/+/, "")}`,
       );
     }
 
@@ -56,7 +56,9 @@ export default function MemoryCard({ memory }) {
   };
 
   const prevImage = () =>
-    setCurrentImageIndex((prev) => (prev - 1 + imageUrls.length) % imageUrls.length);
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + imageUrls.length) % imageUrls.length,
+    );
 
   const nextImage = () =>
     setCurrentImageIndex((prev) => (prev + 1) % imageUrls.length);
@@ -69,11 +71,15 @@ export default function MemoryCard({ memory }) {
 
           {imageUrls.length > 1 && (
             <div className="image-navigation">
-              <button className="img-nav-btn" onClick={prevImage}>‹</button>
+              <button className="img-nav-btn" onClick={prevImage}>
+                ‹
+              </button>
               <span className="image-counter">
                 {currentImageIndex + 1} / {imageUrls.length}
               </span>
-              <button className="img-nav-btn" onClick={nextImage}>›</button>
+              <button className="img-nav-btn" onClick={nextImage}>
+                ›
+              </button>
             </div>
           )}
         </div>
@@ -172,6 +178,12 @@ export default function MemoryCard({ memory }) {
               <span className="memory-created">
                 Додано: {new Date(memory.createdAt).toLocaleDateString("uk-UA")}
               </span>
+              <button
+                className="action-link comments"
+                onClick={() => navigate(`/comments/${memory._id}`)}
+              >
+                Коментарі
+              </button>
             </footer>
           </>
         )}

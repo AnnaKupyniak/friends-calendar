@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
 
   async function register(data) {
   try {
-    await axios.post(`${API_URL}/auth/register`, data, {
+    await axios.post(`${API_URL}/api/auth/register/`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
 
   async function login(data) {
     try {
-      await axios.post(`${API_URL}/auth/login`, data, { withCredentials: true });
+      await axios.post(`${API_URL}/api/auth/login`, data, { withCredentials: true });
       await getMe();
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     try {
-      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+      await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true });
       setUser(null);
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
 
   async function deleteUser() {
     try {
-      await axios.delete(`${API_URL}/auth/delete`, { withCredentials: true });
+      await axios.delete(`${API_URL}/api/auth/delete`, { withCredentials: true });
       setUser(null);
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
 
   async function getMe() {
     try {
-      const res = await axios.get(`${API_URL}/auth/me`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/api/auth/me`, { withCredentials: true });
       setUser(res.data.data);
     } catch (err) {
       setUser(null);
@@ -65,7 +65,7 @@ export function AuthProvider({ children }) {
 
   async function updateDetails(data) {
     try {
-      await axios.post(`${API_URL}/auth/updatedetails`, data, { withCredentials: true });
+      await axios.post(`${API_URL}/api/auth/updatedetails`, data, { withCredentials: true });
       await getMe();
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
 
   async function updatePassword(data) {
     try {
-      await axios.post(`${API_URL}/auth/updatepassword`, data, { withCredentials: true });
+      await axios.post(`${API_URL}/api/auth/updatepassword`, data, { withCredentials: true });
       await getMe();
     } catch (err) {
       console.log(err.response?.data || err.message);

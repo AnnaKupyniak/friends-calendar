@@ -10,25 +10,14 @@ export function MemoriesProvider({ children }) {
   const [memories, setMemories] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
-  const getToken = () => {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'token') {
-        return value;
-      }
-    }
-    return null;
-  };
-
   useEffect(() => {
     if (user) fetchMemories();
   }, [user]);
 
   async function fetchMemories() {
     try {
-      const res = await axios.get(`${API_URL}/memories`, { 
-        withCredentials: true 
+      const res = await axios.get(`${API_URL}/api/memories`, {
+        withCredentials: true,
       });
       setMemories(res.data.data);
     } catch (err) {
@@ -38,32 +27,71 @@ export function MemoriesProvider({ children }) {
 
   const createMemory = async (formData) => {
     try {
-      const response = await axios.post(`${API_URL}/memories`, formData, {
+      const response = await axios.post(`${API_URL}/api/memories`, formData, {
         withCredentials: true,
         headers: {
-          'Content-Type': 'multipart/form-data', 
+          "Content-Type": "multipart/form-data",
         },
       });
 
-      setMemories(prev => [response.data.data, ...prev]);
-      
+      setMemories((prev) => [response.data.data, ...prev]);
       return response.data;
     } catch (error) {
-      console.error('Error in createMemory:', error.response?.data || error.message);
+      console.error(
+        "Error in createMemory:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  };
+
+  const createComment = async (memoryId, fieldData) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/memories/${memoryId}/comments`,
+        fieldData,
+        { withCredentials: true },
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.error(
+        "Error in comments:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  };
+
+  const getComments = async (memoryId) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/api/memories/${memoryId}/comments`,
+        { withCredentials: true },
+      );
+
+      return response.data.data || [];
+    } catch (error) {
+      console.error(
+        "Error in comments:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   };
 
   async function updateMemory(memoryId, updatedData) {
     try {
-      const res = await axios.put(`${API_URL}/memories/${memoryId}`, updatedData, {
-        withCredentials: true,
-      });
+      const res = await axios.put(
+        `${API_URL}/api/memories/${memoryId}`,
+        updatedData,
+        { withCredentials: true },
+      );
 
       setMemories((prev) =>
         prev.map((m) => (m._id === memoryId ? res.data.data : m)),
       );
-      
+
       return res.data;
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -73,7 +101,7 @@ export function MemoriesProvider({ children }) {
 
   async function deleteMemory(memoryId) {
     try {
-      await axios.delete(`${API_URL}/memories/${memoryId}`, {
+      await axios.delete(`${API_URL}/api/memories/${memoryId}`, {
         withCredentials: true,
       });
 
@@ -83,6 +111,9 @@ export function MemoriesProvider({ children }) {
       throw err;
     }
   }
+  const getMemoryById = (memoryId) => {
+    return memories.find((m) => m._id === memoryId);
+  };
 
   return (
     <MemoriesContext.Provider
@@ -94,6 +125,9 @@ export function MemoriesProvider({ children }) {
         deleteMemory,
         selectedDate,
         setSelectedDate,
+        createComment,
+        getComments,
+        getMemoryById
       }}
     >
       {children}

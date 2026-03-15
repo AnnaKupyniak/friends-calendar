@@ -10,7 +10,7 @@ const MemorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    imageUrls: [{ 
+    imageUrls: [{
         type: String,
     }],
     date: {
@@ -33,7 +33,14 @@ const MemorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         refPath: 'entityType'
-    }
+    },
+    comments: [
+        {
+            text: { type: String, required: true },
+            author: { type: String, default: "Анонім" },
+            createdAt: { type: Date, default: Date.now }
+        }
+    ]
 },
     { timestamps: true }
 );
