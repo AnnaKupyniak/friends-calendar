@@ -8,7 +8,6 @@ const inputStyle = {
   padding: "9px 12px",
   borderRadius: "var(--radius-sm)",
   border: "1.5px solid var(--border)",
-  background: "var(--bg)",
   color: "var(--text-primary)",
   fontSize: "0.88rem",
   outline: "none",
@@ -67,7 +66,7 @@ export default function NewGroup({ onClose, onAddGroup }) {
   }
 
   return (
-    <div style={{ width: "400px", padding: "24px" }}>
+    <div style={{ width: "400px", padding: "24px" , background: "var(--surface)", borderRadius: "12px" }}>
       <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "20px" }}>
         Створити групу
       </h2>

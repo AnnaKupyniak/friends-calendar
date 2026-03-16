@@ -49,7 +49,7 @@ export function FriendsProvider({ children }) {
   async function addFriend(friendId) {
     try {
       await axios.post(
-        `${API_URL}/users/friends`,
+        `${API_URL}/api/users/friends`,
         { friendId },
         { withCredentials: true },
       );
@@ -92,7 +92,7 @@ export function FriendsProvider({ children }) {
 
   async function addGroup(newGroup) {
     try {
-      await axios.post(`${API_URL}/groups`, newGroup, { withCredentials: true });
+      await axios.post(`${API_URL}/api/groups`, newGroup, { withCredentials: true });
       fetchGroups();
     } catch (err) {
       console.log(err.response?.data || err.message);

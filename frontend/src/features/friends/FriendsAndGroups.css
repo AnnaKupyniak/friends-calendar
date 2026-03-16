@@ -1,13 +1,11 @@
 .friends-list {
   background: var(--surface);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   width: 100%;
   padding: 20px;
 }
 
-/* Заголовок секції */
 .friends-header {
   display: flex;
   justify-content: space-between;
@@ -37,11 +35,6 @@
   white-space: nowrap;
 }
 
-.action-button:hover {
-  background: var(--accent-strong);
-  color: #fff;
-  border-color: var(--accent-strong);
-}
 
 /* Кнопка друга */
 .friend-button {
@@ -77,24 +70,22 @@
 }
 
 .friend-button:hover {
-  background: var(--bg);
+  background: rgba(154, 129, 196, 0.06);
 }
 
-/* Активний елемент */
 .active-item {
-  background: linear-gradient(135deg, var(--accent-strong), #7c3aed) !important;
-  color: #fff !important;
-}
-
-.active-item img {
-  border-color: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(124, 58, 237, 0.12) !important;
+  color: var(--accent-strong) !important;
 }
 
 .active-item span {
-  color: #fff;
+  color: var(--accent-strong);
 }
 
-/* Розділювач між секціями */
+.active-item img {
+  border-color: rgba(124, 58, 237, 0.35) !important;
+}
+
 .friends-list > div + div {
   margin-top: 20px;
   padding-top: 20px;

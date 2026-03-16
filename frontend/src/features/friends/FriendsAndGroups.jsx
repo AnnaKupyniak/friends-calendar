@@ -109,7 +109,6 @@ export default function FriendsAndGroups() {
                       onSelectGroup(group);
                     }}
                   >
-                    {/* Іконка групи з ініціалами */}
                     <div style={{
                       width: "34px", height: "34px", borderRadius: "50%", flexShrink: 0,
                       background: isActive
