@@ -202,8 +202,9 @@ export default function Profile() {
           <div className="friend-list">
             {sidebarTab === "friends" &&
               friendships.map((f) => {
-                const friend = f.users.find((u) => u._id !== user._id);
+                const friend = f.users.find((u) => u._id !== user._id) || {}; 
                 const isActive = selectedFriendshipId === f._id;
+
                 return (
                   <button
                     key={f._id}
@@ -222,7 +223,7 @@ export default function Profile() {
                       }
                       alt=""
                     />
-                    <span>{friend.fullName}</span>
+                    <span>{friend.fullName || friend.username || "Друг"}</span>
                   </button>
                 );
               })}

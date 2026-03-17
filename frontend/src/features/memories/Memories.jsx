@@ -1,17 +1,19 @@
 import "./Memories.css";
 import CreateMemory from "./CreateMemory";
 import Modal from "../../components/Modal/Modal";
-import { useState, useEffect, useRef, useContext,useMemo } from "react";
+import { useState, useEffect, useRef, useContext, useMemo } from "react";
 import dayjs from "dayjs";
 import MemoryCard from "./MemoryCard";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { MemoriesContext } from "../../context/MemoriesContext.jsx";
 import AddMember from "../../features/friends/AddMember.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function Memories({ category }) {
   const [isModalOpen, setModalIsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   const { memories, selectedDate } = useContext(MemoriesContext);
   const { selectedEntity, removeFriend, deleteGroup } =
@@ -75,6 +77,11 @@ export default function Memories({ category }) {
         </h1>
 
         <div className="header-controls">
+          <button
+            onClick={() => navigate(`/chat/${selectedEntity.data.user?._id}`)}
+          >
+            Чат
+          </button>
           <button
             className="add-memory-btn"
             onClick={() => setModalIsOpen(true)}

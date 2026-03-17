@@ -11,6 +11,7 @@ import { MemoriesProvider } from "./context/MemoriesContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Comments from "./pages/Comments/Comments.jsx";
+import Chat from "./pages/Chat/Chat.jsx";
 
 function App() {
   return (
@@ -52,7 +53,20 @@ function App() {
                 </MemoriesProvider>
               </FriendsProvider>
         </ProtectedRoute>} />
+
+        <Route path="/chat/:id" element={<ProtectedRoute>
+          <FriendsProvider>
+                <MemoriesProvider>
+                  <Chat />
+                </MemoriesProvider>
+              </FriendsProvider>
+        </ProtectedRoute>} />
+        
       </Routes>
+      
+
+
+      
     </AuthProvider>
   );
 }

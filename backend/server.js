@@ -8,6 +8,8 @@ const userRoutes = require('./routes/userRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const memoryRoutes = require('./routes/memoryRoutes');
 const authRoutes = require('./routes/authRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+
 const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +31,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/memories', memoryRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/messages', messageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
