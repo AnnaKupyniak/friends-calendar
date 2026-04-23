@@ -1,7 +1,8 @@
 const Memory = require('../models/Memory');
 const Friendship = require('../models/Friendship');
 const Group = require('../models/Group');
-const upload = require('../middleware/upload');
+const fs = require('fs'); 
+const path = require('path');
 
 exports.createMemory = async (req, res) => {
   try {
@@ -43,7 +44,6 @@ exports.createMemory = async (req, res) => {
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
       imageUrls = req.files.map(file => `/uploads/${file.filename}`);
-      console.log("Images saved:", imageUrls);
     }
 
     const memory = await Memory.create({
@@ -135,6 +135,8 @@ exports.getComments = async(req,res) =>{
 exports.getAllUserMemories = async (req, res) => {
   try {
     const userId = req.user._id;
+    const skip = parseInt(req.query.skip) || 0;
+    const limit = Math.min(parseInt(req.query.limit) || 50, 100); // Max 100 per page
 
     const friendships = await Friendship.find({ users: userId });
     const friendshipIds = friendships.map(f => f._id);
@@ -147,7 +149,10 @@ exports.getAllUserMemories = async (req, res) => {
         { entityType: 'Friendship', entity: { $in: friendshipIds } },
         { entityType: 'Group', entity: { $in: groupIds } }
       ]
-    });
+    })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
     res.status(200).json({ success: true, data: memories });
   } catch (err) {
@@ -165,7 +170,6 @@ exports.getMemoriesForEntity = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error fetching memories', error: err.message });
   }
 };
-
 exports.updateMemory = async (req, res) => {
   const memoryId = req.params.id;
 
@@ -173,6 +177,7 @@ exports.updateMemory = async (req, res) => {
     const memory = await Memory.findById(memoryId);
     if (!memory) return res.status(404).json({ success: false, message: 'Memory not found' });
 
+    // --- Перевірка доступу (ваша логіка) ---
     let hasAccess = false;
     if (memory.entityType === 'Friendship') {
       const friendship = await Friendship.findById(memory.entity);
@@ -184,11 +189,33 @@ exports.updateMemory = async (req, res) => {
 
     if (!hasAccess) return res.status(403).json({ success: false, message: 'Not authorized' });
 
+    // --- Логіка оновлення фото ---
+    if (req.files && req.files.length > 0) {
+      // 1. (Опціонально) Видаляємо старі фото з сервера, щоб не накопичувати сміття
+      if (memory.imageUrls && memory.imageUrls.length > 0) {
+        memory.imageUrls.forEach(url => {
+          // url зазвичай "/uploads/filename.jpg", тому прибираємо перший слеш
+          const filePath = path.join(__dirname, '..', url); 
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
+
+      // 2. Додаємо нові шляхи
+      const newImageUrls = req.files.map(file => `/uploads/${file.filename}`);
+      req.body.imageUrls = newImageUrls;
+    }
+
+    // --- Оновлення решти полів ---
+    // Використовуємо Object.assign для title, description, date тощо
     Object.assign(memory, req.body);
+    
     await memory.save();
 
     res.status(200).json({ success: true, data: memory });
   } catch (err) {
+    console.error('Update error:', err);
     res.status(400).json({ success: false, message: 'Error updating memory', error: err.message });
   }
 };

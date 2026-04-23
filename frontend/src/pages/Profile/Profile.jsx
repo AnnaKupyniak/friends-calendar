@@ -1,9 +1,9 @@
-import { useContext, useState, useMemo } from "react";
+﻿import { useContext, useState, useMemo } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { FriendsContext } from "../../context/FriendsContext";
 import { MemoriesContext } from "../../context/MemoriesContext";
 import MemoryCard from "../../features/memories/MemoryCard";
-import { Bar } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/uk";
@@ -14,11 +14,12 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  ArcElement,
   Tooltip,
   Legend,
 } from "chart.js";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 dayjs.extend(isoWeek);
 dayjs.locale("uk");
@@ -140,6 +141,56 @@ export default function Profile() {
     },
   };
 
+  const placesData = useMemo(() => {
+    const placeCounts = {};
+    entityMemories.forEach((m) => {
+      const place = m.place || "Невідомо";
+      placeCounts[place] = (placeCounts[place] || 0) + 1;
+    });
+
+    const places = Object.keys(placeCounts);
+    const counts = Object.values(placeCounts);
+
+    const colors = [
+      "#F5811F",
+      "#592E83",
+      "#8E44AD",
+      "#CAA8F5",
+      "#FFA94D",
+      "#F1E9FA",
+      "#7B3FB5",
+      "#E6B5FF",
+    ];
+
+    return {
+      labels: places,
+      datasets: [
+        {
+          data: counts,
+          backgroundColor: colors.slice(0, places.length),
+          borderColor: "#FFFFFF",
+          borderWidth: 2,
+        },
+      ],
+    };
+  }, [entityMemories]);
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          font: { size: 11, weight: "bold" },
+          color: "#6E5A85",
+          padding: 12,
+          usePointStyle: true,
+        },
+      },
+    },
+  };
+
   const selectedEntityName = selectedFriend
     ? selectedFriend.fullName || selectedFriend.username
     : selectedGroup
@@ -150,7 +201,6 @@ export default function Profile() {
     <div className="profile-page">
       {/* --- Profile Hero Section --- */}
       <div className="profile-hero">
-        <div className="hero-backdrop"></div>
         <div className="hero-content">
           <div className="avatar-container">
             <img
@@ -171,7 +221,7 @@ export default function Profile() {
                 {user.fullName || user.username}
               </h1>
               <p className="user-sub-details">
-                @{user.username} <span className="dot">·</span> {user.email}
+                @{user.username}
               </p>
             </div>
             <button onClick={logout} className="logout-btn-outline">
@@ -254,7 +304,7 @@ export default function Profile() {
           {selectedEntityName ? (
             <>
               <div className="stats-header">
-                <h3>Статистика: {selectedEntityName}</h3>
+                <h2>Статистика: {selectedEntityName}</h2>
                 <div className="period-switch">
                   <button
                     className={period === "week" ? "active" : ""}
@@ -283,24 +333,42 @@ export default function Profile() {
                 <button onClick={() => setOffset(offset + 1)}>›</button>
               </div>
 
-              <div className="chart-stats-row">
+              <div className="chart-container">
                 <div className="chart">
                   <Bar data={chartData} options={chartOptions} />
                 </div>
 
-                <div className="stats-info">
-                  <h1>{averageValue}</h1>
-                  <div className="stats-text">
-                    <p>Середнє</p>
-                    <p className="total-badge">За період: {totalInPeriod}</p>
+                <div className="stats-cards">
+                  <div className="stat-card stat-card-avg">
+                    <span className="stat-label">Середнє за день</span>
+                    <span className="stat-value">{averageValue}</span>
+                  </div>
+                  <div className="stat-card stat-card-total">
+                    <span className="stat-label">Всього за період</span>
+                    <span className="stat-value">{totalInPeriod}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="memories">
-                {entityMemories.slice(-4).map((m) => (
-                  <MemoryCard key={m._id} memory={m} />
-                ))}
+              {entityMemories.length > 0 && (
+                <div className="places-section">
+                  <div className="places-header">
+                    <h3>Найчастіші локації</h3>
+                    <span className="places-count">{placesData.labels.length}</span>
+                  </div>
+                  <div className="places-chart">
+                    <Doughnut data={placesData} options={doughnutOptions} />
+                  </div>
+                </div>
+              )}
+
+              <div className="memories-section">
+                <h3 className="memories-title">Останні спогади</h3>
+                <div className="memories">
+                  {entityMemories.slice(-4).map((m) => (
+                    <MemoryCard key={m._id} memory={m} />
+                  ))}
+                </div>
               </div>
             </>
           ) : (

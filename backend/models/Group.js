@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const GroupSchema = new mongoose.Schema(
   {
@@ -11,6 +11,10 @@ const GroupSchema = new mongoose.Schema(
     description: {
       type: String,
       maxlength: [500, 'Description cannot be more than 500 characters']
+    },
+    avatar: {
+      type: String,
+      default: 'default-group.png'
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,

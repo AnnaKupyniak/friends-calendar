@@ -16,15 +16,61 @@ const PORT = process.env.PORT || 5000;
 
 connectDB();
 
-// Middleware
+// Security and Middleware
 app.use(cookieParser());
+
+// CORS Configuration - restrict to frontend origin
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'];
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Basic rate limiting
+const requestCounts = new Map();
+const rateLimit = (req, res, next) => {
+  const ip = req.ip;
+  const now = Date.now();
+  const windowSize = 60000; // 1 minute
+  const maxRequests = 100;
+
+  if (!requestCounts.has(ip)) {
+    requestCounts.set(ip, []);
+  }
+
+  const timestamps = requestCounts.get(ip).filter(t => now - t < windowSize);
+  
+  if (timestamps.length >= maxRequests) {
+    return res.status(429).json({ message: 'Too many requests, please try again later' });
+  }
+
+  timestamps.push(now);
+  requestCounts.set(ip, timestamps);
+  next();
+};
+
+app.use(rateLimit);
+
+// Security headers middleware
+const securityHeaders = (req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+};
+
+app.use(securityHeaders);
 
 // Routes
 app.use('/api/users', userRoutes);

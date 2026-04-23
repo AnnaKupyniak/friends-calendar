@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 
 const { 
@@ -7,36 +7,28 @@ const {
   getAllGroups, 
   updateGroup, 
   deleteGroup,
-  addMembers,        // Зверніть увагу: в контролері може бути addMembers, а не addMember
+  addMembers,
   removeMember,
   addCategoryToGroup 
 } = require('../controllers/groupController');
 const { protect } = require('../middleware/auth');
+const { validateGroupInput } = require('../middleware/validation');
+const upload = require('../middleware/upload');
 
-console.log('Imported functions:', { 
-  createGroup, 
-  getGroupById, 
-  getAllGroups, 
-  updateGroup, 
-  deleteGroup,
-  addMembers,
-  removeMember,
-  addCategoryToGroup 
-});
-
-router.use(protect); 
+router.use(protect);
 
 router.route('/')
-    .post(createGroup)
+    .post(upload.single('avatar'), validateGroupInput, createGroup)
     .get(getAllGroups);
 
 router.route('/:id')
     .get(getGroupById)
-    .put(updateGroup)
+    .put(upload.single('avatar'), validateGroupInput, updateGroup)
     .delete(deleteGroup);
 
-router.post('/:id/categories', addCategoryToGroup);
-router.post('/:id/members', addMembers); 
-router.delete('/:id/members/:memberId', removeMember);
+router.post('/:id/categories', validateGroupInput, addCategoryToGroup);
+router.post('/:id/members', validateGroupInput, addMembers); 
+router.delete('/:id/members/:memberId', validateGroupInput, removeMember);
 
 module.exports = router;
+

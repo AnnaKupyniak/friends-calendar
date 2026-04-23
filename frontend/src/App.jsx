@@ -12,6 +12,7 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Comments from "./pages/Comments/Comments.jsx";
 import Chat from "./pages/Chat/Chat.jsx";
+import MyCalendar from "./pages/MyCalendar/MyCalendar.jsx";
 
 function App() {
   return (
@@ -62,6 +63,14 @@ function App() {
               </FriendsProvider>
         </ProtectedRoute>} />
         
+        <Route path="/myCalendar" element={<ProtectedRoute>
+          <FriendsProvider>
+                <MemoriesProvider>
+                  <MyCalendar />
+                </MemoriesProvider>
+              </FriendsProvider>
+        </ProtectedRoute>} />
+
       </Routes>
       
 

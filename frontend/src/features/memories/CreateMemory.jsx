@@ -34,15 +34,12 @@ export default function CreateMemory({ onClose }) {
     );
 
     if (!categoryExists && categoryName.trim()) {
-      console.log(`Category "${categoryName}" doesn't exist. Adding...`);
-
       try {
         if (selectedEntity.type === "friend") {
           await addCategoryToFriendship(selectedEntity.data._id, categoryName);
         } else if (selectedEntity.type === "group") {
           await addCategoryToGroup(selectedEntity.data._id, categoryName);
         }
-        console.log(`Category "${categoryName}" added successfully`);
       } catch (error) {
         console.error("Error adding category:", error);
       }
@@ -71,18 +68,8 @@ export default function CreateMemory({ onClose }) {
       });
     }
 
-    console.log("=== FormData contents ===");
-    for (let pair of formData.entries()) {
-      if (pair[0] === "photos") {
-        console.log(`photos: ${pair[1].name}`);
-      } else {
-        console.log(pair[0] + ": " + pair[1]);
-      }
-    }
-
     try {
       const result = await createMemory(formData);
-      console.log("Memory created:", result);
 
       if (categoryValue && categoryValue.trim()) {
         await ensureCategoryExists(categoryValue);
@@ -107,8 +94,7 @@ export default function CreateMemory({ onClose }) {
       selectedFiles.filter((_, index) => index !== indexToRemove),
     );
   }
-  console.log("entityId:", selectedEntity?.data._id);
-  console.log("entityType:", entityTypeMap[selectedEntity?.type]);
+
   return (
     <form className="card shadow-sm p-4" onSubmit={handleSubmit}>
       <h4 className="mb-3">Створити спогад</h4>

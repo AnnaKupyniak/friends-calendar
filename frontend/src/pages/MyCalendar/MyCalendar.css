@@ -1,0 +1,316 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #592E83;
+  --primary-light: #F1E9FA;
+  --accent: #F5811F;
+  --text: #1A1024;
+  --text-light: #7E6D8F;
+  --white: #FFFFFF;
+  --border: #F0E6FB;
+  --shadow: 0 4px 20px rgba(89, 46, 131, 0.06);
+}
+
+.mycal-page {
+  min-height: 100vh;
+  background-color: #FBF9FF;
+  padding: 40px;
+  font-family: 'Manrope', sans-serif;
+  color: var(--text);
+}
+
+.mycal-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.mycal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.mycal-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, var(--primary), #8E44AD);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mycal-subtitle {
+  color: var(--text-light);
+  margin: 8px 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mycal-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--white);
+  padding: 8px 20px 8px 8px;
+  border-radius: 50px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.mycal-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-light);
+}
+
+.mycal-username {
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: block;
+}
+
+.mycal-user-role {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Stats */
+.mycal-stats-bar {
+  margin-bottom: 40px;
+}
+
+.mycal-stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.mycal-stat-item {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.mycal-stat-item:hover {
+  transform: translateY(-2px);
+}
+
+.mycal-stat-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+}
+
+.mycal-stat-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+  display: block;
+}
+
+.mycal-stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* Main Layout */
+.mycal-main-layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Calendar Card */
+.mycal-calendar-card {
+  background: var(--white);
+  padding: 32px;
+  border-radius: 32px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 40px;
+}
+
+/* Legend & Clear */
+.mycal-legend {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mycal-legend-info {
+  display: flex;
+  gap: 16px;
+}
+
+.mycal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.mycal-legend-selected {
+  width: 12px;
+  height: 12px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.mycal-clear-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mycal-clear-btn:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* Content List */
+.mycal-content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.mycal-content-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.mycal-content-count {
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  background: var(--white);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.mycal-memories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.mycal-empty-state {
+  background: var(--white);
+  padding: 80px 40px;
+  border-radius: 32px;
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.mycal-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.mycal-empty-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* Calendar Overrides */
+.mycal-datecalendar {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.mycal-day-wrapper {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mycal-day-wrapper.has-memory {
+  background: rgba(245, 129, 31, 0.05);
+  border-radius: 12px;
+}
+
+.mycal-day-wrapper.selected {
+  background: var(--primary) !important;
+  border-radius: 12px;
+}
+
+.mycal-dot-row {
+  position: absolute;
+  bottom: 4px;
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+
+.mycal-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.mycal-dot-more {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 4px;
+}
+
+@media (max-width: 1100px) {
+  .mycal-main-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .mycal-stats-container { grid-template-columns: 1fr; }
+  .mycal-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+}
+explanation:

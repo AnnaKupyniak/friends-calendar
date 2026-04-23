@@ -19,6 +19,9 @@ export default function Header() {
               <NavLink to="/" className="nav-link">
                 Головна
               </NavLink>
+              <NavLink to="/myCalendar" className="nav-link">
+                Мій календар
+              </NavLink>
               <NavLink to="/profile" className="nav-link">
                 Профіль
               </NavLink>

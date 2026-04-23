@@ -10,15 +10,16 @@ const {
   addCategoryToFriendship
 } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');
-
-router.get('/', getAllUsers);
+const { validateFriendshipInput } = require('../middleware/validation');
 
 router.use(protect);
 
+router.get('/', getAllUsers);
+
 router.get('/friends/find', findFriend); 
 router.get('/friends', getFriends);    
-router.post('/friends', addFriend);      
-router.delete('/friends', removeFriend); 
-router.post('/friends/:friendshipId/categories', protect, addCategoryToFriendship);
+router.post('/friends', validateFriendshipInput, addFriend);      
+router.delete('/friends', validateFriendshipInput, removeFriend); 
+router.post('/friends/:friendshipId/categories', validateFriendshipInput, addCategoryToFriendship);
 
 module.exports = router;

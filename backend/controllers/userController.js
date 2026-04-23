@@ -24,17 +24,21 @@ exports.getFriends = async (req, res) => {
 
 exports.findFriend = async (req, res) => {
   const userId = req.user.id;
-  const { query } = req.query;
+  let { query } = req.query;
 
   if (!query) {
     return res.status(400).json({ message: 'Query is required' });
   }
 
+  // Sanitize and limit query to prevent ReDoS attacks
+  query = String(query).trim().slice(0, 50);
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const regex = new RegExp(query, 'i');
+    const regex = new RegExp(escapedQuery, 'i');
     const results = await User.find({
       //   _id: { $nin: [...user.friends, user._id] },
       $or: [

@@ -30,7 +30,6 @@ export function FriendsProvider({ children }) {
       const res = await axios.get(`${API_URL}/api/users/friends`, {
         withCredentials: true,
       });
-      console.log("Friends data from server:", res.data);
       setFriendships(res.data.friendships || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -243,8 +242,6 @@ export function FriendsProvider({ children }) {
   }
 
   function onSelectFriend(friendUser) {
-    console.log("Selecting friend:", friendUser);
-
     const friendship = friendships.find((f) => {
       const userIds = f.users.map((u) => u._id?.toString() || u.toString());
       return (
@@ -254,15 +251,8 @@ export function FriendsProvider({ children }) {
     });
 
     if (!friendship) {
-      console.error("Friendship not found");
-      setSelectedEntity({
-        type: "friend",
-        data: {
-          _id: `temp-${friendUser._id}`,
-          user: friendUser,
-          categories: [],
-        },
-      });
+      // Don't create entity without valid friendship
+      console.error("Friendship not found for user:", friendUser._id);
       return;
     }
 

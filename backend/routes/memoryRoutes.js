@@ -11,7 +11,7 @@ router.get('/', protect, getAllUserMemories);
 router.get('/entity/:entityId', protect, getMemoriesForEntity);
 
 router.route('/:id')
-    .put(protect, updateMemory)
+    .put(protect, upload.array('photos',10), updateMemory)
     .delete(protect, deleteMemory);
 router.post('/:id/comments', protect, createComment)
 router.get('/:id/comments', protect, getComments)

@@ -1,28 +1,7 @@
-import { useState, useEffect, useContext, useMemo } from "react";
+﻿import { useState, useEffect, useContext, useRef } from "react";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-const inputStyle = {
-  width: "100%",
-  padding: "9px 12px",
-  borderRadius: "var(--radius-sm)",
-  border: "1.5px solid var(--border)",
-  color: "var(--text-primary)",
-  fontSize: "0.88rem",
-  outline: "none",
-  transition: "var(--transition)",
-};
-
-const labelStyle = {
-  fontSize: "0.78rem",
-  fontWeight: 600,
-  color: "var(--text-muted)",
-  marginBottom: "6px",
-  display: "block",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-};
 
 export default function NewGroup({ onClose, onAddGroup }) {
   const { getFriendsList } = useContext(FriendsContext);
@@ -30,90 +9,182 @@ export default function NewGroup({ onClose, onAddGroup }) {
   const [groupName, setGroupName] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [query, setQuery] = useState("");
-  const [availableFriends, setAvailableFriends] = useState([]);
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const fileInputRef = useRef(null);
 
-  const friendsList = useMemo(() => getFriendsList() || [], [getFriendsList]);
+  const friendsList = getFriendsList() || [];
 
-  useEffect(() => {
-    setAvailableFriends(friendsList);
-  }, [friendsList]);
+  const availableFriends = friendsList.filter((f) => {
+    const value = query.toLowerCase().trim();
+    if (!value) return true;
 
-  function handleSearch(e) {
-    const value = e.target.value.toLowerCase().trim();
-    setQuery(value);
-    if (!value) {
-      setAvailableFriends(friendsList);
-      return;
-    }
-    setAvailableFriends(friendsList.filter((f) => {
-      const fullName = f.user?.fullName?.toLowerCase() || "";
-      const username = f.user?.username?.toLowerCase() || "";
-      return fullName.includes(value) || username.includes(value);
-    }));
-  }
+    const fullName = f.user?.fullName?.toLowerCase() || "";
+    const username = f.user?.username?.toLowerCase() || "";
+
+    return fullName.includes(value) || username.includes(value);
+  });
 
   function toggleMember(id) {
+    if (!id) return;
+
     setSelectedMembers((prev) =>
-      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((m) => m !== id)
+        : [...prev, id]
     );
   }
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatar(file);
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!groupName.trim()) return;
-    onAddGroup({ name: groupName.trim(), members: selectedMembers, categories: [] });
+
+    const formData = new FormData();
+    formData.append("name", groupName.trim());
+    formData.append("members", JSON.stringify(selectedMembers));
+
+    if (avatar) {
+      formData.append("avatar", avatar);
+    }
+
+    onAddGroup(formData);
     onClose();
   }
 
   return (
-    <div style={{ width: "400px", padding: "24px" , background: "var(--surface)", borderRadius: "12px" }}>
-      <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "20px" }}>
-        Створити групу
-      </h2>
+    <div className="new-group-modal">
+      <div className="modal-header">
+        <h2 className="mycal-content-title">Створити нову групу</h2>
+        <p className="mycal-subtitle">
+          Об'єднайте друзів для спільних моментів
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        {/* Назва */}
-        <div style={{ marginBottom: "16px" }}>
-          <label style={labelStyle}>Назва групи</label>
+      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+        {/* Avatar */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "24px",
+          }}
+        >
+          <div
+            onClick={() => fileInputRef.current.click()}
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "30px",
+              background: "var(--primary-light)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              overflow: "hidden",
+              border: "2px dashed var(--primary)",
+              position: "relative",
+            }}
+          >
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+                alt="Avatar Preview"
+              />
+            ) : (
+              <div
+                style={{ textAlign: "center", color: "var(--primary)" }}
+              >
+                <span style={{ fontSize: "24px", display: "block" }}>
+                  📸
+                </span>
+                <span style={{ fontSize: "10px", fontWeight: 700 }}>
+                  АВАТАР
+                </span>
+              </div>
+            )}
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept="image/*"
+              onChange={handleAvatarChange}
+            />
+          </div>
+        </div>
+
+        <div className="modal-form-group">
+          <label className="modal-label">Назва групи</label>
           <input
             type="text"
-            style={inputStyle}
+            className="modal-input"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            placeholder="Введіть назву..."
+            placeholder="Наприклад: Найкращі друзі"
             required
             autoFocus
           />
         </div>
 
-        {/* Пошук */}
-        <div style={{ marginBottom: "10px" }}>
-          <label style={labelStyle}>Додати учасників</label>
+        <div className="modal-form-group">
+          <label className="modal-label">Додати учасників</label>
           <input
             type="text"
-            style={inputStyle}
+            className="modal-input"
             value={query}
-            onChange={handleSearch}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Пошук друга..."
           />
         </div>
 
-        {/* Список друзів */}
-        <div style={{
-          maxHeight: "200px",
-          overflowY: "auto",
-          border: "1.5px solid var(--border)",
-          borderRadius: "var(--radius-sm)",
-          marginBottom: "16px",
-        }}>
+        <div
+          className="members-scroll"
+          style={{
+            maxHeight: "180px",
+            overflowY: "auto",
+            border: "1px solid var(--border)",
+            borderRadius: "12px",
+            padding: "8px",
+          }}
+        >
           {availableFriends.length === 0 ? (
-            <div style={{ padding: "12px", fontSize: "0.82rem", color: "var(--text-muted)", textAlign: "center" }}>
+            <p
+              style={{
+                textAlign: "center",
+                color: "var(--text-light)",
+                fontSize: "0.8rem",
+                padding: "10px",
+              }}
+            >
               Друзів не знайдено
-            </div>
+            </p>
           ) : (
             availableFriends.map((f) => {
               const id = f.user?._id;
-              const name = f.user?.fullName || f.user?.username || "Unknown";
+              if (!id) return null;
+
               const isSelected = selectedMembers.includes(id);
 
               return (
@@ -123,110 +194,74 @@ export default function NewGroup({ onClose, onAddGroup }) {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "10px",
-                    padding: "8px 12px",
+                    gap: "12px",
+                    padding: "8px",
                     cursor: "pointer",
-                    transition: "var(--transition)",
-                    background: isSelected ? "linear-gradient(135deg, var(--accent-strong), #7c3aed)" : "transparent",
-                    borderBottom: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    transition: "all 0.2s",
+                    background: isSelected
+                      ? "var(--primary-light)"
+                      : "transparent",
+                    marginBottom: "4px",
                   }}
                 >
                   <img
-                    src={f.user?.avatar
-                      ? `${API_URL}/uploads/${f.user.avatar}`
-                      : `${API_URL}/uploads/default-avatar.png`}
+                    src={
+                      f.user?.avatar
+                        ? `${API_URL}/uploads/${f.user.avatar}`
+                        : `${API_URL}/uploads/default-avatar.png`
+                    }
                     alt={f.user?.username}
                     style={{
-                      width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",
-                      border: isSelected ? "2px solid rgba(255,255,255,0.4)" : "2px solid var(--border)",
-                      flexShrink: 0
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: isSelected
+                        ? "2px solid var(--primary)"
+                        : "2px solid transparent",
                     }}
                   />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "0.83rem", fontWeight: 600, color: isSelected ? "#fff" : "var(--text-primary)" }}>
-                      {name}
-                    </div>
-                    <div style={{ fontSize: "0.72rem", color: isSelected ? "rgba(255,255,255,0.65)" : "var(--text-muted)" }}>
+
+                  <div style={{ flex: 1 }}>
+                    <p
+                      style={{
+                        fontSize: "0.9rem",
+                        fontWeight: 700,
+                        margin: 0,
+                      }}
+                    >
+                      {f.user?.fullName || f.user?.username}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--text-light)",
+                        margin: 0,
+                      }}
+                    >
                       @{f.user?.username}
-                    </div>
+                    </p>
                   </div>
-                  <div style={{
-                    width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
-                    border: `2px solid ${isSelected ? "#fff" : "var(--border)"}`,
-                    background: isSelected ? "#fff" : "transparent",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "0.65rem", color: "var(--accent-strong)", fontWeight: 700
-                  }}>
-                    {isSelected ? "✓" : ""}
-                  </div>
+
+                  {isSelected && (
+                    <span style={{ color: "var(--primary)" }}>✅</span>
+                  )}
                 </div>
               );
             })
           )}
         </div>
 
-        {/* Вибрані */}
-        {selectedMembers.length > 0 && (
-          <div style={{ marginBottom: "16px" }}>
-            <label style={labelStyle}>Вибрано: {selectedMembers.length}</label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-              {selectedMembers.map((memberId) => {
-                const member = friendsList.find((f) => f.user?._id === memberId);
-                if (!member) return null;
-                const name = member.user.fullName || member.user.username;
-                return (
-                  <span
-                    key={memberId}
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: "5px",
-                      background: "var(--border)", borderRadius: "99px",
-                      padding: "3px 10px 3px 8px", fontSize: "0.78rem",
-                      color: "var(--text-primary)", fontWeight: 500,
-                    }}
-                  >
-                    {name}
-                    <button
-                      type="button"
-                      onClick={() => toggleMember(memberId)}
-                      style={{
-                        border: "none", background: "none", cursor: "pointer",
-                        color: "var(--text-muted)", fontSize: "0.75rem",
-                        padding: 0, lineHeight: 1
-                      }}
-                    >
-                      ×
-                    </button>
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Кнопки */}
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+        <div className="modal-footer">
           <button
             type="button"
+            className="modal-btn modal-btn-secondary"
             onClick={onClose}
-            style={{
-              border: "1.5px solid var(--border)", background: "none",
-              color: "var(--text-muted)", borderRadius: "var(--radius-sm)",
-              padding: "6px 16px", fontSize: "0.82rem", fontWeight: 600,
-              cursor: "pointer", transition: "var(--transition)",
-            }}
           >
             Скасувати
           </button>
-          <button
-            type="submit"
-            style={{
-              border: "none", background: "var(--accent-strong)", color: "#fff",
-              borderRadius: "var(--radius-sm)", padding: "6px 16px",
-              fontSize: "0.82rem", fontWeight: 600, cursor: "pointer",
-              transition: "var(--transition)",
-            }}
-          >
-            Створити
+          <button type="submit" className="modal-btn modal-btn-primary">
+            Створити групу
           </button>
         </div>
       </form>

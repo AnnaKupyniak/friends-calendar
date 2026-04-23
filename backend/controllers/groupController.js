@@ -1,16 +1,28 @@
-const Group = require('../models/Group');
+﻿const Group = require('../models/Group');
 const Memory = require('../models/Memory');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 exports.createGroup = async (req, res) => {
     try {
-        const members = new Set([req.user.id, ...(req.body.members || [])]);
+        let groupData = { ...req.body };
+        
+        // Обробка членів групи (якщо приходять як JSON рядок)
+        if (typeof req.body.members === 'string') {
+            groupData.members = JSON.parse(req.body.members);
+        }
 
-        const groupData = {
-            ...req.body,
+        const membersList = new Set([req.user.id, ...(groupData.members || [])]);
+
+        groupData = {
+            ...groupData,
             owner: req.user.id,
-            members: [...members]
+            members: [...membersList]
         };
+
+        // Додаємо аватар, якщо він був завантажений
+        if (req.file) {
+            groupData.avatar = req.file.filename;
+        }
 
         const group = await Group.create(groupData);
 
@@ -111,9 +123,14 @@ exports.updateGroup = async (req, res) => {
             });
         }
 
+        let updateData = { ...req.body };
+        if (req.file) {
+            updateData.avatar = req.file.filename;
+        }
+
         group = await Group.findByIdAndUpdate(
             groupId,
-            req.body,
+            updateData,
             { new: true, runValidators: true }
         )
             .populate('owner', 'username fullName avatar')
@@ -146,15 +163,15 @@ exports.deleteGroup = async (req, res) => {
             });
         }
 
+        // Тільки власник групи може її видалити
         if (group.owner.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
-                message: 'Only the group owner can delete the group'
+                message: 'Only group owner can delete the group'
             });
         }
 
-        await group.deleteOne();
-        await Memory.deleteMany({ entity: groupId, entityType: 'Group' });
+        await Group.findByIdAndDelete(groupId);
 
         res.status(200).json({
             success: true,
@@ -172,10 +189,10 @@ exports.deleteGroup = async (req, res) => {
 
 exports.addMembers = async (req, res) => {
     const groupId = req.params.id;
-    const { userIds } = req.body;
+    const { members } = req.body;
 
     try {
-        const group = await Group.findById(groupId);
+        let group = await Group.findById(groupId);
 
         if (!group) {
             return res.status(404).json({
@@ -184,6 +201,7 @@ exports.addMembers = async (req, res) => {
             });
         }
 
+        // Перевірка, чи поточний користувач є членом групи
         if (!group.members.some(m => m._id.toString() === req.user.id)) {
             return res.status(403).json({
                 success: false,
@@ -191,12 +209,13 @@ exports.addMembers = async (req, res) => {
             });
         }
 
-        const newMembers = userIds.filter(
-            id => !group.members.some(m => m.toString() === id)
-        );
-        group.members.push(...newMembers);
+        // Додаємо нових членів
+        const newMembers = Array.isArray(members) ? members : [members];
+        const memberSet = new Set([...group.members.map(m => m.toString()), ...newMembers]);
+        group.members = [...memberSet];
 
         await group.save();
+        await group.populate('owner', 'username fullName avatar');
         await group.populate('members', 'username fullName avatar');
 
         res.status(200).json({
@@ -212,68 +231,97 @@ exports.addMembers = async (req, res) => {
         });
     }
 };
+
 exports.removeMember = async (req, res) => {
-    const { id: groupId, memberId } = req.params;
+    const { id, memberId } = req.params;
 
     try {
-        console.log(`Removing member ${memberId} from group ${groupId}`);
-        if (!mongoose.Types.ObjectId.isValid(groupId) || !mongoose.Types.ObjectId.isValid(memberId)) {
-            return res.status(400).json({ success: false, message: 'Невалідний ID' });
-        }
+        let group = await Group.findById(id);
 
-        const group = await Group.findById(groupId);
         if (!group) {
-            return res.status(404).json({ success: false, message: 'Групу не знайдено' });
+            return res.status(404).json({
+                success: false,
+                message: 'Group not found'
+            });
         }
 
-        if (group.owner.toString() !== req.user.id) {
-            return res.status(403).json({ success: false, message: 'Ви не власник групи' });
+        // Перевірка, чи поточний користувач є членом групи
+        if (!group.members.some(m => m._id.toString() === req.user.id)) {
+            return res.status(403).json({
+                success: false,
+                message: 'You are not a member of this group'
+            });
         }
 
-        const memberObjectId = new mongoose.Types.ObjectId(memberId);
-        const isMember = group.members.some(m => m.equals(memberObjectId));
-        if (!isMember) {
-            return res.status(404).json({ success: false, message: 'Учасника не знайдено в групі' });
-        }
+        // Видаляємо члена
+        group.members = group.members.filter(m => m.toString() !== memberId);
 
-        const updatedGroup = await Group.findOneAndUpdate(
-            { _id: groupId },
-            { $pull: { members: memberObjectId } }, 
-            { new: true }
-        ).populate('members', 'username fullName avatar');
+        await group.save();
+        await group.populate('owner', 'username fullName avatar');
+        await group.populate('members', 'username fullName avatar');
 
         res.status(200).json({
             success: true,
-            group: updatedGroup
+            data: group
         });
     } catch (err) {
-        console.error('ПОМИЛКА:', err);
-        res.status(500).json({ success: false, error: err.message });
+        console.error('Error removing member:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error removing member',
+            error: err.message
+        });
     }
 };
 
 exports.addCategoryToGroup = async (req, res) => {
-    try {
-        const { groupId } = req.params;
-        const { category } = req.body;
+    const groupId = req.params.id;
+    const { category } = req.body;
 
-        const group = await Group.findById(groupId);
-        if (!group) {
-            return res.status(404).json({ message: 'Group not found' });
+    try {
+        if (!category) {
+            return res.status(400).json({
+                success: false,
+                message: 'Category is required'
+            });
         }
 
-        if (!group.members.some(m => m.toString() === req.user.id))
+        let group = await Group.findById(groupId);
 
-            if (!group.categories.includes(category)) {
-                group.categories.push(category);
-                await group.save();
-            }
+        if (!group) {
+            return res.status(404).json({
+                success: false,
+                message: 'Group not found'
+            });
+        }
 
-        res.json({
-            message: 'Category added',
-            categories: group.categories
+        // Перевірка, чи поточний користувач є членом групи
+        if (!group.members.some(m => m._id.toString() === req.user.id)) {
+            return res.status(403).json({
+                success: false,
+                message: 'You are not a member of this group'
+            });
+        }
+
+        // Додаємо категорію, якщо її ще немає
+        if (!group.categories.includes(category)) {
+            group.categories.push(category);
+            await group.save();
+        }
+
+        await group.populate('owner', 'username fullName avatar');
+        await group.populate('members', 'username fullName avatar');
+
+        res.status(200).json({
+            success: true,
+            data: group
         });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        console.error('Error adding category:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error adding category',
+            error: err.message
+        });
     }
 };

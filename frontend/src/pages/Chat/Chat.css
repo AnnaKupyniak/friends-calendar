@@ -1,11 +1,38 @@
+/* ─── Page Layout ───────────────────────────────────── */
+.chat-page {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Sidebar ───────────────────────────────────────── */
+.chat-sidebar {
+  border-right: 1.5px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.chat-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.chat-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 99px;
+}
+
+/* ─── Chat Wrapper ──────────────────────────────────── */
 .chat-wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 720px;
-  margin: 0 auto;
   background: var(--bg);
   font-family: "Georgia", serif;
+  overflow: hidden;
 }
 
 /* ── Header ── */
@@ -262,4 +289,15 @@
   font-size: 14px;
   font-style: italic;
   margin: 0;
+}
+
+/* ─── Responsive ────────────────────────────────────── */
+@media (max-width: 680px) {
+  .chat-page {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-sidebar {
+    display: none;
+  }
 }

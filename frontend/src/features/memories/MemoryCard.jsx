@@ -9,6 +9,8 @@ export default function MemoryCard({ memory }) {
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Стан для нових файлів
+  
   const [formData, setFormData] = useState({
     title: memory.title,
     description: memory.description,
@@ -16,7 +18,9 @@ export default function MemoryCard({ memory }) {
     place: memory.place,
     category: memory.category || "",
   });
+
   const navigate = useNavigate();
+
   const getImageUrls = () => {
     const baseUrl = API_URL.split("/api")[0];
 
@@ -50,9 +54,22 @@ export default function MemoryCard({ memory }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    updateMemory(memory._id, formData);
-    setIsEditing(false);
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      // Перетворюємо FileList у масив
+      setSelectedFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      // Передаємо дані та вибрані файли в контекст
+      await updateMemory(memory._id, formData, selectedFiles);
+      setIsEditing(false);
+      setSelectedFiles([]); // Очищаємо список файлів після успіху
+    } catch (err) {
+      console.error("Failed to update memory", err);
+    }
   };
 
   const prevImage = () =>
@@ -131,13 +148,31 @@ export default function MemoryCard({ memory }) {
               placeholder="Опис спогаду..."
             />
 
+            {/* Секція вибору нових фото */}
+            <div className="file-edit-section">
+              <label className="file-label">Оновити фотографії:</label>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleFileChange}
+                className="modern-input"
+              />
+              {selectedFiles.length > 0 && (
+                <p className="file-status">Вибрано файлів: {selectedFiles.length}</p>
+              )}
+            </div>
+
             <div className="button-group">
               <button className="btn-save" onClick={handleSave}>
                 Зберегти
               </button>
               <button
                 className="btn-cancel"
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false);
+                  setSelectedFiles([]);
+                }}
               >
                 Скасувати
               </button>

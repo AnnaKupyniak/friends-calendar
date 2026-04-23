@@ -1,15 +1,124 @@
-.modal-overlay {
+﻿.modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(45, 27, 61, 0.7);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content {
-    padding: 20px;
-    border-radius: 12px;
+    background: var(--white);
+    padding: 32px;
+    border-radius: 32px;
     max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: visible;
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Common form styles for modals */
+.modal-form-group {
+    margin-bottom: 20px;
+}
+
+.modal-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: all 0.2s;
+    background: #FBF9FF;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    border: none;
+}
+
+.modal-btn-secondary {
+    background: var(--border);
+    color: var(--text-light);
+}
+
+.modal-btn-secondary:hover {
+    background: #DED0F0;
+    color: var(--text);
+}
+
+.modal-btn-primary {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.modal-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(89, 46, 131, 0.3);
+}
+
+/* New Group Modal Specific */
+.new-group-modal {
+    width: 100%;
+}
+
+.modal-header {
+    margin-bottom: 0;
+}
+
+.modal-header h2 {
+    margin: 0 0 8px 0;
+}
+
+.modal-header p {
+    margin: 0;
+}
+explanation:

@@ -9,19 +9,41 @@ export function MemoriesProvider({ children }) {
   const { user } = useContext(AuthContext);
   const [memories, setMemories] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const ITEMS_PER_PAGE = 50;
 
   useEffect(() => {
-    if (user) fetchMemories();
+    if (user) {
+      setPage(1);
+      fetchMemories(1);
+    }
   }, [user]);
 
-  async function fetchMemories() {
+  async function fetchMemories(pageNum = 1) {
+    if (loading && pageNum !== 1) return;
+    
     try {
-      const res = await axios.get(`${API_URL}/api/memories`, {
-        withCredentials: true,
-      });
-      setMemories(res.data.data);
+      setLoading(true);
+      const skip = (pageNum - 1) * ITEMS_PER_PAGE;
+      const res = await axios.get(
+        `${API_URL}/api/memories?skip=${skip}&limit=${ITEMS_PER_PAGE}`,
+        { withCredentials: true }
+      );
+      
+      if (pageNum === 1) {
+        setMemories(res.data.data || []);
+      } else {
+        setMemories((prev) => [...prev, ...(res.data.data || [])]);
+      }
+      
+      setHasMore((res.data.data || []).length === ITEMS_PER_PAGE);
+      setPage(pageNum);
     } catch (err) {
       console.log(err.response?.data || err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -80,12 +102,39 @@ export function MemoriesProvider({ children }) {
     }
   };
 
-  async function updateMemory(memoryId, updatedData) {
+  async function updateMemory(memoryId, updatedData, selectedFiles = []) {
     try {
+      // 1. Створюємо об'єкт FormData замість звичайного об'єкта
+      const formData = new FormData();
+
+      // 2. Додаємо текстові поля (title, description тощо)
+      Object.keys(updatedData).forEach((key) => {
+        // Якщо це масив (наприклад, старі imageUrls), додаємо кожен елемент окремо
+        if (Array.isArray(updatedData[key])) {
+          updatedData[key].forEach((val) => formData.append(key, val));
+        } else {
+          formData.append(key, updatedData[key]);
+        }
+      });
+
+      // 3. Додаємо нові файли зображень
+      // Важливо: назва 'photos' має збігатися з тим, що вказано в роуті на бекенді
+      if (selectedFiles.length > 0) {
+        selectedFiles.forEach((file) => {
+          formData.append("photos", file);
+        });
+      }
+
+      // 4. Відправляємо запит
       const res = await axios.put(
         `${API_URL}/api/memories/${memoryId}`,
-        updatedData,
-        { withCredentials: true },
+        formData, // Передаємо formData
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data", // Axios зазвичай ставить це автоматично для FormData
+          },
+        },
       );
 
       setMemories((prev) =>
@@ -94,7 +143,7 @@ export function MemoriesProvider({ children }) {
 
       return res.data;
     } catch (err) {
-      console.log(err.response?.data || err.message);
+      console.error("Update error:", err.response?.data || err.message);
       throw err;
     }
   }
@@ -127,7 +176,11 @@ export function MemoriesProvider({ children }) {
         setSelectedDate,
         createComment,
         getComments,
-        getMemoryById
+        getMemoryById,
+        page,
+        hasMore,
+        loading,
+        loadMore: () => fetchMemories(page + 1),
       }}
     >
       {children}
