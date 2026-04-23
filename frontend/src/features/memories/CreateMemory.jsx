@@ -96,129 +96,187 @@ export default function CreateMemory({ onClose }) {
   }
 
   return (
-    <form className="card shadow-sm p-4" onSubmit={handleSubmit}>
-      <h4 className="mb-3">Створити спогад</h4>
+    <div className="new-group-modal">
+      <div className="modal-header">
+        <h2 className="mycal-content-title">Додати спогад</h2>
+        <p className="mycal-subtitle">Збережіть важливий момент</p>
+      </div>
 
-      {selectedEntity && (
-        <div className="mb-3">
-          <div className="fw-bold">Спогад для: {getEntityName()}</div>
+      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+        {selectedEntity && (
+          <div className="modal-form-group">
+            <p className="modal-label" style={{ marginBottom: "12px" }}>
+              Спогад для:{" "}
+              <span style={{ color: "var(--accent-strong)" }}>
+                {getEntityName()}
+              </span>
+            </p>
 
-          {selectedEntity.data.categories?.length > 0 && (
-            <div className="mt-2">
-              <small className="text-muted">Існуючі категорії:</small>
-              <div className="d-flex flex-wrap gap-2 mt-1">
+            {selectedEntity.data.categories?.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "6px",
+                  marginBottom: "16px",
+                }}
+              >
                 {selectedEntity.data.categories.map((cat, index) => (
-                  <span key={index} className="badge bg-secondary">
+                  <span
+                    key={index}
+                    className="places-count"
+                    style={{
+                      fontSize: "0.7rem",
+                      padding: "4px 10px",
+                      opacity: 0.8,
+                    }}
+                  >
                     {cat}
                   </span>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )}
+
+        <div className="modal-form-group">
+          <label className="modal-label">Назва спогаду</label>
+          <input
+            type="text"
+            name="title"
+            className="modal-input"
+            required
+            placeholder="Що сталось?"
+          />
         </div>
-      )}
 
-      <div className="mb-3">
-        <label className="form-label">Назва спогаду</label>
-        <input type="text" name="title" className="form-control" required />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Дата</label>
-        <input type="date" name="date" className="form-control" required />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Місце</label>
-        <input type="text" name="place" className="form-control" required />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Категорія</label>
-        <input
-          type="text"
-          name="category"
-          className="form-control"
-          placeholder="Введіть категорію"
-          list="existing-categories"
-        />
-        <datalist id="existing-categories">
-          {selectedEntity?.data.categories?.map((cat, index) => (
-            <option key={index} value={cat} />
-          ))}
-        </datalist>
-        <div className="form-text">
-          Якщо такої категорії немає, вона буде автоматично додана
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <div className="modal-form-group">
+            <label className="modal-label">Дата</label>
+            <input type="date" name="date" className="modal-input" required />
+          </div>
+          <div className="modal-form-group">
+            <label className="modal-label">Місце</label>
+            <input
+              type="text"
+              name="place"
+              className="modal-input"
+              required
+              placeholder="Де були?"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="mb-3">
-        <label className="form-label">Опис спогаду</label>
-        <textarea
-          name="description"
-          rows="4"
-          className="form-control"
-          required
-        ></textarea>
-      </div>
+        <div className="modal-form-group">
+          <label className="modal-label">Категорія</label>
+          <input
+            type="text"
+            name="category"
+            className="modal-input"
+            placeholder="Виберіть або введіть нову"
+            list="existing-categories"
+          />
+          <datalist id="existing-categories">
+            {selectedEntity?.data.categories?.map((cat, index) => (
+              <option key={index} value={cat} />
+            ))}
+          </datalist>
+        </div>
 
-      <div className="mb-3">
-        <label className="form-label">Фото (можна вибрати декілька)</label>
-        <input
-          type="file"
-          name="photos"
-          accept="image/*"
-          className="form-control"
-          onChange={handleFileChange}
-          multiple
-        />
+        <div className="modal-form-group">
+          <label className="modal-label">Опис</label>
+          <textarea
+            name="description"
+            className="modal-input"
+            rows="3"
+            placeholder="Розкажіть детальніше..."
+            style={{ resize: "none" }}
+            required
+          ></textarea>
+        </div>
 
-        {selectedFiles.length > 0 && (
-          <div className="mt-2">
-            <small className="text-muted">
-              Вибрано файлів: {selectedFiles.length}
-            </small>
-            <ul className="list-group mt-2">
+        <div className="modal-form-group">
+          <label className="modal-label">Світлини</label>
+          <input
+            type="file"
+            name="photos"
+            accept="image/*"
+            multiple
+            onChange={handleFileChange}
+            className="modal-input"
+            style={{ fontSize: "0.8rem", padding: "8px" }}
+          />
+
+          {selectedFiles.length > 0 && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "8px",
+                marginTop: "12px",
+              }}
+            >
               {selectedFiles.map((file, index) => (
-                <li
+                <div
                   key={index}
-                  className="list-group-item d-flex justify-content-between align-items-center"
+                  style={{
+                    position: "relative",
+                    aspectRatio: "1/1",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    border: "1px solid var(--border)",
+                  }}
                 >
-                  <span>
-                    {file.name} ({(file.size / 1024).toFixed(2)} KB)
-                  </span>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    alt="preview"
+                  />
                   <button
                     type="button"
-                    className="btn btn-sm btn-outline-danger"
                     onClick={() => removeFile(index)}
+                    style={{
+                      position: "absolute",
+                      top: "2px",
+                      right: "2px",
+                      background: "rgba(0,0,0,0.5)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: "18px",
+                      height: "18px",
+                      fontSize: "12px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
                     ×
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
 
-      <div className="d-flex justify-content-end gap-2">
-        <button
-          type="button"
-          className="btn btn-outline-secondary"
-          onClick={onClose}
-          disabled={isSubmitting}
-        >
-          Скасувати
-        </button>
-
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Збереження..." : "Зберегти спогад"}
-        </button>
-      </div>
-    </form>
+        <div className="modal-footer" style={{ marginTop: "24px" }}>
+          <button
+            type="button"
+            className="modal-btn modal-btn-secondary"
+            onClick={onClose}
+          >
+            Скасувати
+          </button>
+          <button
+            type="submit"
+            className="modal-btn modal-btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Збереження..." : "Створити"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

@@ -109,18 +109,22 @@ export default function FriendsAndGroups() {
                       onSelectGroup(group);
                     }}
                   >
-                    <div style={{
-                      width: "34px", height: "34px", borderRadius: "50%", flexShrink: 0,
-                      background: isActive
-                        ? "rgba(255,255,255,0.25)"
-                        : "linear-gradient(135deg, var(--accent-soft), var(--accent-strong))",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: "0.8rem", fontWeight: 700,
-                      color: isActive ? "#fff" : "#fff",
-                      border: isActive ? "2px solid rgba(255,255,255,0.4)" : "2px solid transparent"
-                    }}>
-                      {group.name?.charAt(0).toUpperCase()}
-                    </div>
+                    <img
+                      src={
+                        group.avatar
+                          ? `${API_URL}/uploads/${group.avatar}`
+                          : `${API_URL}/uploads/default-avatar.png`
+                      }
+                      alt={group.name}
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        border: isActive ? "2px solid var(--accent)" : "2px solid var(--border)",
+                        flexShrink: 0
+                      }}
+                    />
                     <span>{group.name}</span>
                   </button>
                 </li>

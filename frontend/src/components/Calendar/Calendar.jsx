@@ -83,30 +83,37 @@ const checkHasMemory = useCallback((day) => {
         <DateCalendar 
           value={value} 
           onChange={handleDateChange} 
+          showDaysOutsideCurrentMonth
           slots={{
             day: (props) => {
               const { day, outsideCurrentMonth, ...other } = props;
-              // Перевіряємо наявність спогаду
               const hasMemory = !outsideCurrentMonth && checkHasMemory(day);
+              const isSelected = value && day.isSame(value, "day");
 
               return (
-                <PickersDay
-                  {...other}
-                  day={day}
-                  outsideCurrentMonth={outsideCurrentMonth}
-                  sx={{
-                    ...(hasMemory && {
-                      backgroundColor: "#FFCC00 !important",
-                      color: "#000 !important",
-                      fontWeight: "bold",
-                      borderRadius: "50%",
-                    }),
-                    '&.Mui-selected': { 
-                      backgroundColor: "#F5811F !important", 
-                      color: "#fff !important" 
-                    },
-                  }}
-                />
+                <div className={"mycal-day-wrapper " + (hasMemory ? "has-memory " : "") + (isSelected ? "selected " : "") + (outsideCurrentMonth ? "outside" : "")}>
+                  <PickersDay
+                    {...other}
+                    day={day}
+                    outsideCurrentMonth={outsideCurrentMonth}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "12px",
+                      fontSize: "0.85rem",
+                      fontWeight: hasMemory ? 700 : 400,
+                      background: "transparent !important",
+                      color: outsideCurrentMonth ? "rgba(110,90,133,0.3) !important" : isSelected ? "#fff !important" : hasMemory ? "#F5811F !important" : "inherit",
+                      "&:hover": { background: "rgba(245,129,31,0.1) !important" },
+                      "&.Mui-selected": { background: "transparent !important" },
+                    }}
+                  />
+                  {hasMemory && (
+                    <div className="mycal-dot-row">
+                      <span className="mycal-dot" />
+                    </div>
+                  )}
+                </div>
               );
             }
           }}
@@ -119,7 +126,7 @@ const checkHasMemory = useCallback((day) => {
             setValue(null);
             setSelectedDate(null); 
           }}
-          className="btn btn-sm btn-outline-secondary mt-2 w-100"
+          className="show-all-btn"
         >
           Показати всі спогади
         </button>

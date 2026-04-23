@@ -34,7 +34,7 @@ export default function NewFriend({ onClose }) {
   );
 
   return (
-    <div style={{ width: "360px", padding: "24px", background: "var(--surface)", borderRadius: "12px" }}>
+    <div style={{ width: "100%" }}>
       <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>
         Додати друга
       </h2>

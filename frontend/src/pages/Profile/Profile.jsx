@@ -7,6 +7,8 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/uk";
+import Modal from "../../components/Modal/Modal";
+import axios from "../../api/axiosConfig";
 import "./Profile.css";
 
 import {
@@ -27,8 +29,8 @@ dayjs.locale("uk");
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Profile() {
-  const { user, logout } = useContext(AuthContext);
-  const { friendships, groups = [] } = useContext(FriendsContext);
+  const { user, logout, setUser } = useContext(AuthContext);
+  const { friendships, groups = [], updateGroup } = useContext(FriendsContext);
   const { memories } = useContext(MemoriesContext);
 
   const [selectedFriendshipId, setSelectedFriendshipId] = useState(null);
@@ -36,6 +38,10 @@ export default function Profile() {
   const [offset, setOffset] = useState(0);
   const [period, setPeriod] = useState("6m");
   const [sidebarTab, setSidebarTab] = useState("friends");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingGroup, setIsEditingGroup] = useState(false);
+  const [editForm, setEditForm] = useState({ fullName: user?.fullName || '', username: user?.username || '' });
+  const [editGroupForm, setEditGroupForm] = useState({ name: '' });
 
   if (!user) return <div className="loading">Завантаження...</div>;
 
@@ -197,6 +203,32 @@ export default function Profile() {
       ? selectedGroup.name
       : null;
 
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/api/users/profile`, editForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUser(response.data.user);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      alert('Помилка при оновленні профілю');
+    }
+  };
+
+  const handleEditGroupSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateGroup(selectedGroupId, editGroupForm);
+      setIsEditingGroup(false);
+    } catch (err) {
+      console.error('Error updating group:', err);
+      alert('Помилка при оновленні групи');
+    }
+  };
+
   return (
     <div className="profile-page">
       {/* --- Profile Hero Section --- */}
@@ -224,9 +256,14 @@ export default function Profile() {
                 @{user.username}
               </p>
             </div>
-            <button onClick={logout} className="logout-btn-outline">
-              Вийти
-            </button>
+            <div className="hero-buttons">
+              <button onClick={() => setIsEditing(true)} className="edit-btn">
+                Редагувати профіль
+              </button>
+              <button onClick={logout} className="logout-btn-outline">
+                Вийти
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -271,7 +308,7 @@ export default function Profile() {
                           ? `${API_URL}/uploads/${friend.avatar}`
                           : `${API_URL}/uploads/default-avatar.png`
                       }
-                      alt=""
+                      alt={friend.username}
                     />
                     <span>{friend.fullName || friend.username || "Друг"}</span>
                   </button>
@@ -291,7 +328,14 @@ export default function Profile() {
                       setOffset(0);
                     }}
                   >
-                    <div className="group-avatar">{g.name[0]}</div>
+                    <img
+                      src={
+                        g.avatar
+                          ? `${API_URL}/uploads/${g.avatar}`
+                          : `${API_URL}/uploads/default-avatar.png`
+                      }
+                      alt={g.name}
+                    />
                     <span>{g.name}</span>
                   </button>
                 );
@@ -305,25 +349,27 @@ export default function Profile() {
             <>
               <div className="stats-header">
                 <h2>Статистика: {selectedEntityName}</h2>
-                <div className="period-switch">
-                  <button
-                    className={period === "week" ? "active" : ""}
-                    onClick={() => {
-                      setPeriod("week");
-                      setOffset(0);
-                    }}
-                  >
-                    Тиждень
-                  </button>
-                  <button
-                    className={period === "6m" ? "active" : ""}
-                    onClick={() => {
-                      setPeriod("6m");
-                      setOffset(0);
-                    }}
-                  >
-                    6 місяців
-                  </button>
+                <div className="header-actions">
+                  <div className="period-switch">
+                    <button
+                      className={period === "week" ? "active" : ""}
+                      onClick={() => {
+                        setPeriod("week");
+                        setOffset(0);
+                      }}
+                    >
+                      Тиждень
+                    </button>
+                    <button
+                      className={period === "6m" ? "active" : ""}
+                      onClick={() => {
+                        setPeriod("6m");
+                        setOffset(0);
+                      }}
+                    >
+                      6 місяців
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -338,19 +384,6 @@ export default function Profile() {
                   <Bar data={chartData} options={chartOptions} />
                 </div>
 
-                <div className="stats-cards">
-                  <div className="stat-card stat-card-avg">
-                    <span className="stat-label">Середнє за день</span>
-                    <span className="stat-value">{averageValue}</span>
-                  </div>
-                  <div className="stat-card stat-card-total">
-                    <span className="stat-label">Всього за період</span>
-                    <span className="stat-value">{totalInPeriod}</span>
-                  </div>
-                </div>
-              </div>
-
-              {entityMemories.length > 0 && (
                 <div className="places-section">
                   <div className="places-header">
                     <h3>Найчастіші локації</h3>
@@ -360,7 +393,18 @@ export default function Profile() {
                     <Doughnut data={placesData} options={doughnutOptions} />
                   </div>
                 </div>
-              )}
+              </div>
+
+              <div className="stats-cards">
+                <div className="stat-card stat-card-avg">
+                  <span className="stat-label">Середнє за день</span>
+                  <span className="stat-value">{averageValue}</span>
+                </div>
+                <div className="stat-card stat-card-total">
+                  <span className="stat-label">Всього за період</span>
+                  <span className="stat-value">{totalInPeriod}</span>
+                </div>
+              </div>
 
               <div className="memories-section">
                 <h3 className="memories-title">Останні спогади</h3>
@@ -378,6 +422,66 @@ export default function Profile() {
           )}
         </div>
       </div>
+
+      <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
+        <div className="edit-profile-modal-content">
+          <h2>Редагувати профіль</h2>
+          <form onSubmit={handleEditSubmit}>
+            <div className="form-group">
+              <label htmlFor="fullName">Повне ім'я</label>
+              <input
+                type="text"
+                id="fullName"
+                value={editForm.fullName}
+                onChange={(e) => setEditForm({ ...editForm, fullName: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="username">Ім'я користувача</label>
+              <input
+                type="text"
+                id="username"
+                value={editForm.username}
+                onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+              />
+            </div>
+            <div className="modal-buttons">
+              <button type="button" onClick={() => setIsEditing(false)} className="cancel-btn">
+                Скасувати
+              </button>
+              <button type="submit" className="save-btn">
+                Зберегти
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isEditingGroup} onClose={() => setIsEditingGroup(false)}>
+        <div className="edit-profile-modal-content">
+          <h2>Редагувати групу</h2>
+          <form onSubmit={handleEditGroupSubmit}>
+            <div className="form-group">
+              <label htmlFor="groupName">Назва групи</label>
+              <input
+                type="text"
+                id="groupName"
+                value={editGroupForm.name}
+                onChange={(e) => setEditGroupForm({ ...editGroupForm, name: e.target.value })}
+                required
+              />
+            </div>
+            <div className="modal-buttons">
+              <button type="button" onClick={() => setIsEditingGroup(false)} className="cancel-btn">
+                Скасувати
+              </button>
+              <button type="submit" className="save-btn">
+                Зберегти
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }

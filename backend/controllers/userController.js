@@ -112,3 +112,19 @@ exports.addCategoryToFriendship = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { fullName, username } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (fullName !== undefined) user.fullName = fullName;
+    if (username !== undefined) user.username = username;
+
+    await user.save();
+    res.json({ user: { _id: user._id, username: user.username, fullName: user.fullName, avatar: user.avatar } });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

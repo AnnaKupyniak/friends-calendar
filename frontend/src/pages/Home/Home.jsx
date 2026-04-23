@@ -36,7 +36,7 @@ export default function Home() {
       <div className="home-sidebar">
         <FriendsAndGroups />
 
-        <Calendar />
+        {selectedEntity && <Calendar />}
       </div>
 
       <div className="home-main">

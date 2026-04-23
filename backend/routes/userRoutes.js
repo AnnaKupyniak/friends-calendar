@@ -7,7 +7,8 @@ const {
   findFriend,
   addFriend,
   removeFriend,
-  addCategoryToFriendship
+  addCategoryToFriendship,
+  updateUser
 } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');
 const { validateFriendshipInput } = require('../middleware/validation');
@@ -21,5 +22,6 @@ router.get('/friends', getFriends);
 router.post('/friends', validateFriendshipInput, addFriend);      
 router.delete('/friends', validateFriendshipInput, removeFriend); 
 router.post('/friends/:friendshipId/categories', validateFriendshipInput, addCategoryToFriendship);
+router.put('/profile', updateUser);
 
 module.exports = router;

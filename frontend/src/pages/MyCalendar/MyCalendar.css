@@ -259,6 +259,34 @@
 .mycal-datecalendar {
   width: 100% !important;
   max-width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+
+/* Прибираємо лише скролбари, не ховаючи контент */
+.mycal-datecalendar * {
+  scrollbar-width: none !important;
+}
+
+.mycal-datecalendar *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.mycal-datecalendar .MuiPickersCalendarHeader-label {
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 700 !important;
+    color: var(--text) !important;
+}
+
+.mycal-datecalendar .MuiDayCalendar-header span {
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 700 !important;
+    color: var(--text-light) !important;
+    text-transform: uppercase;
+    font-size: 0.7rem !important;
 }
 
 .mycal-day-wrapper {
@@ -313,4 +341,3 @@
   .mycal-stats-container { grid-template-columns: 1fr; }
   .mycal-header { flex-direction: column; align-items: flex-start; gap: 24px; }
 }
-explanation:

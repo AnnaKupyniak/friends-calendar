@@ -1,7 +1,7 @@
 ﻿.modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(45, 27, 61, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -12,16 +12,17 @@
 }
 
 .modal-content {
-    background: var(--white);
+    background-color: #FFFFFF !important;
     padding: 32px;
-    border-radius: 32px;
-    max-width: 500px;
-    width: 100%;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border-radius: 32px !important;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border);
     animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
-    overflow: visible;
+    overflow: hidden;
+    z-index: 1001;
 }
 
 @keyframes fadeIn {
@@ -108,6 +109,13 @@
 /* New Group Modal Specific */
 .new-group-modal {
     width: 100%;
+    background: transparent;
+}
+
+/* Add Member Modal Specific */
+.add-member-modal {
+    width: 100%;
+    background: transparent;
 }
 
 .modal-header {
@@ -121,4 +129,3 @@
 .modal-header p {
     margin: 0;
 }
-explanation:
