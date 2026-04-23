@@ -17,65 +17,59 @@ import MyCalendar from "./pages/MyCalendar/MyCalendar.jsx";
 function App() {
   return (
     <AuthProvider>
-      <Header />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <FriendsProvider>
-                <MemoriesProvider>
+      <FriendsProvider>
+        <MemoriesProvider>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
                   <Home />
-                </MemoriesProvider>
-              </FriendsProvider>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <FriendsProvider>
-                <MemoriesProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
                   <Profile />
-                </MemoriesProvider>
-              </FriendsProvider>
-            </ProtectedRoute>
-          }
-        />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-        <Route path="/comments/:id" element={<ProtectedRoute>
-          <FriendsProvider>
-                <MemoriesProvider>
+            <Route
+              path="/comments/:id"
+              element={
+                <ProtectedRoute>
                   <Comments />
-                </MemoriesProvider>
-              </FriendsProvider>
-        </ProtectedRoute>} />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route path="/chat/:id" element={<ProtectedRoute>
-          <FriendsProvider>
-                <MemoriesProvider>
+            <Route
+              path="/chat/:id"
+              element={
+                <ProtectedRoute>
                   <Chat />
-                </MemoriesProvider>
-              </FriendsProvider>
-        </ProtectedRoute>} />
-        
-        <Route path="/myCalendar" element={<ProtectedRoute>
-          <FriendsProvider>
-                <MemoriesProvider>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/myCalendar"
+              element={
+                <ProtectedRoute>
                   <MyCalendar />
-                </MemoriesProvider>
-              </FriendsProvider>
-        </ProtectedRoute>} />
-
-      </Routes>
-      
-
-
-      
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </MemoriesProvider>
+      </FriendsProvider>
     </AuthProvider>
   );
 }

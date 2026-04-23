@@ -7,7 +7,13 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export function FriendsProvider({ children }) {
   const { user } = useContext(AuthContext);
-  const [selectedEntity, setSelectedEntity] = useState(null);
+
+  // Спроба завантажити обрану сутність з localStorage
+  const [selectedEntity, setSelectedEntity] = useState(() => {
+    const saved = localStorage.getItem("selectedEntity");
+    return saved ? JSON.parse(saved) : null;
+  });
+
   const [selectedCategory, setSelectedCategory] = useState({
     id: 0,
     name: "Всі категорії",
@@ -16,6 +22,15 @@ export function FriendsProvider({ children }) {
   const [groups, setGroups] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Зберігаємо вибір у localStorage при кожній зміні
+  useEffect(() => {
+    if (selectedEntity) {
+      localStorage.setItem("selectedEntity", JSON.stringify(selectedEntity));
+    } else {
+      localStorage.removeItem("selectedEntity");
+    }
+  }, [selectedEntity]);
 
   useEffect(() => {
     if (user) {
