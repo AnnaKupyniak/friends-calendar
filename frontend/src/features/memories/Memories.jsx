@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import MemoryCard from "./MemoryCard";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { MemoriesContext } from "../../context/MemoriesContext.jsx";
+import { MemoriesSearch } from "../../components/Search/MemoriesSearch.jsx";
 import AddMember from "../../features/friends/AddMember.jsx";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +22,7 @@ export default function Memories({ category }) {
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
 
-  const { memories, selectedDate } = useContext(MemoriesContext);
+  const { memories, searchResults, isSearching, selectedDate } = useContext(MemoriesContext);
   const { selectedEntity, removeFriend, deleteGroup, updateGroup } =
     useContext(FriendsContext);
 
@@ -84,7 +85,8 @@ export default function Memories({ category }) {
   const entityTypeMap = { friend: "Friendship", group: "Group" };
 
   const filteredMemories = useMemo(() => {
-    return memories.filter((memory) => {
+    const baseMemories = isSearching ? searchResults : memories;
+    return baseMemories.filter((memory) => {
       if (memory.entityType !== entityTypeMap[selectedEntity.type])
         return false;
       if (memory.entity !== selectedEntity.data._id) return false;
@@ -96,7 +98,7 @@ export default function Memories({ category }) {
       }
       return true;
     });
-  }, [memories, selectedEntity, category, selectedDate]);
+  }, [memories, searchResults, isSearching, selectedEntity, category, selectedDate]);
 
   const getFriendName = () => {
     if (!selectedEntity?.data) return "";
@@ -130,6 +132,10 @@ export default function Memories({ category }) {
             {selectedEntity?.type === "friend" && getFriendName()}
             {selectedEntity?.type === "group" && selectedEntity.data.name}
           </h1>
+        </div>
+
+        <div className="header-search-wrapper">
+          <MemoriesSearch />
         </div>
 
         <div className="header-controls">

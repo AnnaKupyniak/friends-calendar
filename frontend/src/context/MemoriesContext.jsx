@@ -12,6 +12,9 @@ export function MemoriesProvider({ children }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const ITEMS_PER_PAGE = 50;
 
   useEffect(() => {
@@ -163,25 +166,70 @@ export function MemoriesProvider({ children }) {
   const getMemoryById = (memoryId) => {
     return memories.find((m) => m._id === memoryId);
   };
+  const searchMemories = async (params) => {
+  try {
+    setSearchLoading(true);
+    setIsSearching(true);
+
+    const queryString = new URLSearchParams(params).toString();
+
+    const res = await axios.get(
+      `${API_URL}/api/memories/search?${queryString}`,
+      { withCredentials: true }
+    );
+
+    setSearchResults(res.data.data || []);
+    return res.data.data;
+
+  } catch (err) {
+    console.error("Search error:", err.response?.data || err.message);
+    throw err;
+  } finally {
+    setSearchLoading(false);
+  }
+};
+const clearSearch = () => {
+  setSearchResults([]);
+  setIsSearching(false);
+};
+
+const getAllTags = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/api/memories/tags`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching tags:", err);
+    throw err;
+  }
+};
 
   return (
     <MemoriesContext.Provider
       value={{
-        memories,
-        fetchMemories,
-        createMemory,
-        updateMemory,
-        deleteMemory,
-        selectedDate,
-        setSelectedDate,
-        createComment,
-        getComments,
-        getMemoryById,
-        page,
-        hasMore,
-        loading,
-        loadMore: () => fetchMemories(page + 1),
-      }}
+  memories,
+  searchResults,
+  searchMemories,
+  clearSearch,
+  getAllTags,
+  isSearching,
+  searchLoading,
+
+  fetchMemories,
+  createMemory,
+  updateMemory,
+  deleteMemory,
+  selectedDate,
+  setSelectedDate,
+  createComment,
+  getComments,
+  getMemoryById,
+  page,
+  hasMore,
+  loading,
+  loadMore: () => fetchMemories(page + 1),
+}}
     >
       {children}
     </MemoriesContext.Provider>

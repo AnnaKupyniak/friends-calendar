@@ -9,6 +9,8 @@ const groupRoutes = require('./routes/groupRoutes');
 const memoryRoutes = require('./routes/memoryRoutes');
 const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const errorHandler = require('./middleware/errorMiddleware');
 
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -78,6 +80,9 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/memories', memoryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

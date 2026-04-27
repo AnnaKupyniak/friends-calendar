@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
+import { AuthContext } from "../../context/AuthContext.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,8 +16,9 @@ const inputStyle = {
 };
 
 export default function NewFriend({ onClose }) {
-  const { friendships, addFriend, findFriend, searchResults } =
+  const { friendships, friendRequests, addFriend, findFriend, searchResults } =
     useContext(FriendsContext);
+  const { user } = useContext(AuthContext);
 
   const [query, setQuery] = useState("");
 
@@ -30,7 +32,13 @@ export default function NewFriend({ onClose }) {
   }
 
   const filteredUsers = searchResults.filter(
-    (u) => !friendships.some((f) => f.users.some((fu) => fu._id === u._id))
+    (u) => 
+      // Не показувати себе
+      u._id !== user._id &&
+      // Не показувати вже існуючих друзів
+      !friendships.some((f) => f.users.some((fu) => fu._id === u._id)) &&
+      // Не показувати тих, хто надіслав запит нам
+      !friendRequests.some((r) => r.requester?._id === u._id)
   );
 
   return (

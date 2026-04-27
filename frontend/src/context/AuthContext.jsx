@@ -49,9 +49,11 @@ export function AuthProvider({ children }) {
         {},
         { withCredentials: true },
       );
+      localStorage.removeItem("selectedEntity");
       setUser(null);
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Logout failed';
+      localStorage.removeItem("selectedEntity");
       setError(errorMsg);
       setUser(null);
     }

@@ -26,15 +26,29 @@
 
 .nav-link, .nav-link:visited, .nav-link:link {
   text-decoration: none;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   position: relative;
   transition: 0.2s ease;
+  padding: 4px 0;
 }
 
 .nav-link.active {
-  color: var(--accent) !important; 
+  color: var(--accent) !important;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
 }
 
 

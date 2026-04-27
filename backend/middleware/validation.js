@@ -14,9 +14,28 @@ const sanitizeString = (str, maxLength = 500) => {
     .replace(/[<>]/g, ''); // Remove potential XSS vectors
 };
 
+const sanitizeHtml = (str) => {
+  if (typeof str !== 'string') return '';
+  return String(str)
+    .replace(/[<>&'"]/g, (char) => {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      };
+      return map[char];
+    });
+};
+
 const sanitizeId = (id) => {
   // MongoDB ObjectId is 24 hex characters
   return String(id).trim();
+};
+
+const isValidObjectId = (id) => {
+  return String(id).match(/^[0-9a-f]{24}$/i);
 };
 
 const validateUserInput = (req, res, next) => {
@@ -29,6 +48,10 @@ const validateUserInput = (req, res, next) => {
     }
     if (username.length > 50) {
       return res.status(400).json({ message: 'Username must be less than 50 characters' });
+    }
+    // Перевірка на спеціальні символи
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ message: 'Username can only contain letters, numbers, underscores and hyphens' });
     }
   }
 
@@ -65,7 +88,7 @@ const validateUserInput = (req, res, next) => {
 const validateFriendshipInput = (req, res, next) => {
   const { friendId, category } = req.body || req.query;
 
-  if (friendId && (!String(friendId).match(/^[0-9a-f]{24}$/i))) {
+  if (friendId && !isValidObjectId(friendId)) {
     return res.status(400).json({ message: 'Invalid friend ID format' });
   }
 
@@ -98,11 +121,11 @@ const validateGroupInput = (req, res, next) => {
     return res.status(400).json({ message: 'Category cannot be empty' });
   }
 
-  if (memberId && (!String(memberId).match(/^[0-9a-f]{24}$/i))) {
+  if (memberId && !isValidObjectId(memberId)) {
     return res.status(400).json({ message: 'Invalid member ID format' });
   }
 
-  if (groupId && (!String(groupId).match(/^[0-9a-f]{24}$/i))) {
+  if (groupId && !isValidObjectId(groupId)) {
     return res.status(400).json({ message: 'Invalid group ID format' });
   }
 
@@ -110,7 +133,7 @@ const validateGroupInput = (req, res, next) => {
 };
 
 const validateMemoryInput = (req, res, next) => {
-  const { title, description, tags, category } = req.body;
+  const { title, description, tags, category, date, place } = req.body;
 
   if (title && (typeof title !== 'string' || title.trim().length < 1)) {
     return res.status(400).json({ message: 'Title is required' });
@@ -124,19 +147,43 @@ const validateMemoryInput = (req, res, next) => {
     return res.status(400).json({ message: 'Description is too long' });
   }
 
+  if (place && place.length > 200) {
+    return res.status(400).json({ message: 'Place name is too long' });
+  }
+
+  if (date && isNaN(Date.parse(date))) {
+    return res.status(400).json({ message: 'Invalid date format' });
+  }
+
   if (category && sanitizeString(category, 100).length < 1) {
     return res.status(400).json({ message: 'Category cannot be empty' });
   }
 
-  if (tags && Array.isArray(tags)) {
-    if (tags.length > 20) {
+  if (tags) {
+    let tagsArray = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',') : []);
+    if (tagsArray.length > 20) {
       return res.status(400).json({ message: 'Too many tags (max 20)' });
     }
-    for (const tag of tags) {
-      if (typeof tag !== 'string' || tag.length > 50) {
-        return res.status(400).json({ message: 'Tag must be less than 50 characters' });
+    for (const tag of tagsArray) {
+      const trimmedTag = tag.trim();
+      if (typeof trimmedTag !== 'string' || trimmedTag.length === 0 || trimmedTag.length > 50) {
+        return res.status(400).json({ message: 'Each tag must be 1-50 characters' });
       }
     }
+  }
+
+  next();
+};
+
+const validateCommentInput = (req, res, next) => {
+  const { text } = req.body;
+
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    return res.status(400).json({ message: 'Comment text is required' });
+  }
+
+  if (text.length > 1000) {
+    return res.status(400).json({ message: 'Comment is too long (max 1000 characters)' });
   }
 
   next();
@@ -145,9 +192,12 @@ const validateMemoryInput = (req, res, next) => {
 module.exports = {
   validateEmail,
   sanitizeString,
+  sanitizeHtml,
   sanitizeId,
+  isValidObjectId,
   validateUserInput,
   validateFriendshipInput,
   validateGroupInput,
   validateMemoryInput,
+  validateCommentInput,
 };

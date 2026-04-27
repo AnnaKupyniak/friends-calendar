@@ -14,9 +14,28 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getFriends = async (req, res) => {
   try {
-    const friendships = await Friendship.find({ users: req.user._id })
-      .populate('users', 'username fullName avatar');
+    const friendships = await Friendship.find({ 
+      users: req.user._id,
+      status: 'accepted'
+    }).populate('users', 'username fullName avatar');
     res.json({ friendships });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.getFriendRequests = async (req, res) => {
+  try {
+    const requests = await Friendship.find({ 
+      users: req.user._id,
+      status: 'pending',
+      requester: { $ne: req.user._id }
+    }).populate('requester', 'username fullName avatar');
+    
+    // Додаємо налагодження
+    console.log(`User ${req.user.username} (ID: ${req.user._id}) has ${requests.length} incoming requests`);
+    
+    res.json({ requests });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -40,7 +59,7 @@ exports.findFriend = async (req, res) => {
 
     const regex = new RegExp(escapedQuery, 'i');
     const results = await User.find({
-      //   _id: { $nin: [...user.friends, user._id] },
+      _id: { $ne: user._id },
       $or: [
         { username: { $regex: regex } },
         { fullName: { $regex: regex } }
@@ -59,14 +78,52 @@ exports.addFriend = async (req, res) => {
   try {
     const exists = await Friendship.findOne({ users: { $all: [req.user._id, friendId] } });
     if (exists) {
-      return res.status(400).json({ message: 'Friendship already exists' });
+      const msg = exists.status === 'pending' ? 'Request already pending' : 'Friendship already exists';
+      return res.status(400).json({ message: msg });
     }
 
-    const friendship = await Friendship.create({ users: [req.user._id, friendId] })
+    const friendship = await Friendship.create({ 
+      users: [req.user._id, friendId],
+      requester: req.user._id,
+      status: 'pending'
+    })
 
-    // await friendship.populate('friends', 'username fullName avatar');
+    res.status(201).json({ message: 'Friend request sent', friendship });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
 
-    res.status(201).json({ message: 'Friend added', friendship });
+exports.acceptFriendRequest = async (req, res) => {
+  const { requesterId } = req.body;
+  try {
+    const friendship = await Friendship.findOne({ 
+      users: { $all: [req.user._id, requesterId] },
+      status: 'pending'
+    });
+
+    if (!friendship) return res.status(404).json({ message: 'Request not found' });
+
+    friendship.status = 'accepted';
+    await friendship.save();
+
+    res.json({ message: 'Friend request accepted', friendship });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.declineFriendRequest = async (req, res) => {
+  const { requesterId } = req.body;
+  try {
+    const friendship = await Friendship.findOneAndDelete({ 
+      users: { $all: [req.user._id, requesterId] },
+      status: 'pending'
+    });
+
+    if (!friendship) return res.status(404).json({ message: 'Request not found' });
+
+    res.json({ message: 'Friend request declined' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

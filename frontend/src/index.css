@@ -31,4 +31,20 @@ body{
   --shadow-md: 0 6px 24px rgba(89, 46, 131, 0.12);
 
   --transition: 0.18s ease;
+
+  /* Skeleton loading vars */
+  --skeleton-bg: #E9DDF8;
+  --skeleton-highlight: #F5EEFF;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-highlight) 50%, var(--skeleton-bg) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
 }

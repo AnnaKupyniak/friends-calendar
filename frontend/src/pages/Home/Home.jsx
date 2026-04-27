@@ -4,7 +4,7 @@ import FriendsAndGroups from "../../features/friends/FriendsAndGroups";
 import Memories from "../../features/memories/Memories";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { useContext, useState } from "react";
-import "./Home.css";
+import './Home.css';
 
 export default function Home() {
   const {
@@ -40,10 +40,14 @@ export default function Home() {
       </div>
 
       <div className="home-main">
-        {!selectedEntity && "Select a friend or group"}
-        {selectedEntity && <Memories category={selectedCategory} />}
+        {!selectedEntity && (
+          <div className="placeholder-message">Оберіть друга або групу зліва</div>
+        )}
+        
+        {selectedEntity && (
+          <Memories category={selectedCategory} />
+        )}
       </div>
-
       {selectedEntity && (
         <div className="home-right-panel">
           <Categories

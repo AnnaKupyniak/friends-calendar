@@ -11,8 +11,11 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function FriendsAndGroups() {
   const {
     friendships = [],
+    friendRequests = [],
     groups = [],
     addGroup,
+    acceptFriendRequest,
+    declineFriendRequest,
     onSelectFriend,
     onSelectGroup,
     loading,
@@ -24,7 +27,23 @@ export default function FriendsAndGroups() {
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [activeItem, setActiveItem] = useState({ type: null, id: null });
 
-  if (loading) return <p>Завантаження...</p>;
+  if (loading) {
+    return (
+      <div className="friends-list">
+        <div>
+          <div className="friends-header">
+            <h2 className="skeleton" style={{ width: "60px", height: "14px" }}>&nbsp;</h2>
+          </div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="friend-button" style={{ pointerEvents: "none" }}>
+              <div className="skeleton" style={{ width: "40px", height: "40px", borderRadius: "50%" }}></div>
+              <div className="skeleton" style={{ width: "100px", height: "16px" }}></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const getFriendFromFriendship = (friendship) => {
     if (!user || !friendship.users) return null;
@@ -35,6 +54,51 @@ export default function FriendsAndGroups() {
 
   return (
     <div className="friends-list">
+
+      {/* Запити у друзі (відображаємо тільки якщо є) */}
+      {friendRequests.length > 0 && (
+        <div style={{ marginBottom: "20px" }}>
+          <div className="friends-header">
+            <h2 style={{ color: "var(--accent)" }}>Запити ({friendRequests.length})</h2>
+          </div>
+          <ul className="list-unstyled">
+            {friendRequests.map((req) => (
+              <li key={req._id} style={{ marginBottom: "8px" }}>
+                <div className="friend-button" style={{ cursor: "default", gap: "10px" }}>
+                  <img
+                    src={req.requester?.avatar
+                      ? `${API_URL}/uploads/${req.requester.avatar}`
+                      : `${API_URL}/uploads/default-avatar.png`}
+                    alt={req.requester?.username}
+                  />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {req.requester?.fullName || req.requester?.username}
+                    </div>
+                    <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                      <button 
+                        className="action-button" 
+                        style={{ padding: "4px 8px", fontSize: "0.75rem", background: "var(--accent)", color: "white" }}
+                        onClick={() => acceptFriendRequest(req.requester._id)}
+                      >
+                        Прийняти
+                      </button>
+                      <button 
+                        className="action-button" 
+                        style={{ padding: "4px 8px", fontSize: "0.75rem", background: "var(--bg-light)", border: "1px solid var(--border)" }}
+                        onClick={() => declineFriendRequest(req.requester._id)}
+                      >
+                        Відхилити
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "16px 0" }} />
+        </div>
+      )}
 
       {/* Друзі */}
       <div>

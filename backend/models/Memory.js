@@ -24,6 +24,11 @@ const MemorySchema = new mongoose.Schema({
     category: {
         type: String
     },
+    tags: [{
+        type: String,
+        trim: true,
+        lowercase: true
+    }],
     entityType: {
         type: String,
         enum: ['Friendship', 'Group'],
@@ -44,5 +49,9 @@ const MemorySchema = new mongoose.Schema({
 },
     { timestamps: true }
 );
+
+// Index для пошуку по тегам
+MemorySchema.index({ tags: 1 });
+MemorySchema.index({ title: "text", description: "text", place: "text" });
 
 module.exports = mongoose.model('Memory', MemorySchema);

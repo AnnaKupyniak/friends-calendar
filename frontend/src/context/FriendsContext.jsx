@@ -19,6 +19,7 @@ export function FriendsProvider({ children }) {
     name: "Всі категорії",
   });
   const [friendships, setFriendships] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   const [groups, setGroups] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +35,15 @@ export function FriendsProvider({ children }) {
 
   useEffect(() => {
     if (user) {
-      Promise.all([fetchFriends(), fetchGroups()]).finally(() =>
+      Promise.all([fetchFriends(), fetchFriendRequests(), fetchGroups()]).finally(() =>
         setLoading(false),
       );
+    } else {
+      // Очищуємо стан при розлогінюванні
+      setFriendships([]);
+      setFriendRequests([]);
+      setGroups([]);
+      setSelectedEntity(null);
     }
   }, [user]);
 
@@ -45,9 +52,22 @@ export function FriendsProvider({ children }) {
       const res = await axios.get(`${API_URL}/api/users/friends`, {
         withCredentials: true,
       });
+      console.log("Fetched friendships:", res.data.friendships);
       setFriendships(res.data.friendships || []);
     } catch (err) {
       console.log(err.response?.data || err.message);
+    }
+  }
+
+  async function fetchFriendRequests() {
+    try {
+      const res = await axios.get(`${API_URL}/api/users/friends/requests`, {
+        withCredentials: true,
+      });
+      console.log("FriendRequests API response:", res.data); // ДЕТАЛЬНИЙ ЛОГ
+      setFriendRequests(res.data.requests || []);
+    } catch (err) {
+      console.log("Error fetching requests:", err.response?.data || err.message);
     }
   }
 
@@ -67,7 +87,35 @@ export function FriendsProvider({ children }) {
         { friendId },
         { withCredentials: true },
       );
-      fetchFriends();
+      alert("Запит надіслано!");
+      await fetchFriendRequests();
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+      alert(err.response?.data?.message || "Помилка при надсиланні запиту");
+    }
+  }
+
+  async function acceptFriendRequest(requesterId) {
+    try {
+      await axios.post(
+        `${API_URL}/api/users/friends/accept`,
+        { requesterId },
+        { withCredentials: true },
+      );
+      await Promise.all([fetchFriends(), fetchFriendRequests()]);
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+    }
+  }
+
+  async function declineFriendRequest(requesterId) {
+    try {
+      await axios.post(
+        `${API_URL}/api/users/friends/decline`,
+        { requesterId },
+        { withCredentials: true },
+      );
+      fetchFriendRequests();
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
@@ -323,11 +371,15 @@ export function FriendsProvider({ children }) {
         selectedCategory,
         setSelectedCategory,
         friendships,
+        friendRequests,
         groups,
         searchResults,
         setSearchResults,
         loading,
+        fetchFriendRequests,
         addFriend,
+        acceptFriendRequest,
+        declineFriendRequest,
         removeFriend,
         findFriend,
         addGroup,

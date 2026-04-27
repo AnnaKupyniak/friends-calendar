@@ -277,3 +277,191 @@ exports.deleteMemory = async (req, res) => {
     });
   }
 };
+
+exports.searchAndFilterMemories = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const {
+      query,
+      tags,
+      startDate,
+      endDate,
+      place,
+      category,
+      sortBy = 'createdAt',
+      skip = 0,
+      limit = 50
+    } = req.query;
+
+    // --- helper для безпечного regex ---
+    const escapeRegex = str =>
+      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // --- отримуємо дружби і групи ---
+    const friendships = await Friendship.find({ users: userId }).select('_id');
+    const groups = await Group.find({ members: userId }).select('_id');
+
+    const friendshipIds = friendships.map(f => f._id);
+    const groupIds = groups.map(g => g._id);
+
+    // --- базовий фільтр доступу ---
+    const filter = {
+      $or: [
+        { entityType: 'Friendship', entity: { $in: friendshipIds } },
+        { entityType: 'Group', entity: { $in: groupIds } }
+      ]
+    };
+
+    const andConditions = [];
+
+    // --- TEXT SEARCH ---
+    if (query) {
+      const safeQuery = escapeRegex(query.trim());
+      const regex = new RegExp(safeQuery, 'i');
+
+      andConditions.push({
+        $or: [
+          { title: regex },
+          { description: regex },
+          { place: regex }
+        ]
+      });
+    }
+
+    // --- TAGS ---
+    if (tags) {
+      const tagArray = Array.isArray(tags)
+        ? tags
+        : tags.split(',');
+
+      const normalizedTags = tagArray
+        .map(t => t.trim())
+        .filter(Boolean);
+
+      if (normalizedTags.length > 0) {
+        andConditions.push({
+          tags: {
+            $in: normalizedTags.map(t => new RegExp(`^${escapeRegex(t)}$`, 'i'))
+          }
+        });
+      }
+    }
+
+    // --- DATE RANGE ---
+    if (startDate || endDate) {
+      const dateFilter = {};
+
+      if (startDate) {
+        const start = new Date(startDate);
+        if (!isNaN(start)) dateFilter.$gte = start;
+      }
+
+      if (endDate) {
+        const end = new Date(endDate);
+        if (!isNaN(end)) dateFilter.$lte = end;
+      }
+
+      if (Object.keys(dateFilter).length > 0) {
+        andConditions.push({ date: dateFilter });
+      }
+    }
+
+    // --- PLACE (окремо, щоб не конфліктував з query) ---
+    if (place) {
+      const safePlace = escapeRegex(place.trim());
+      andConditions.push({
+        place: new RegExp(safePlace, 'i')
+      });
+    }
+
+    // --- CATEGORY ---
+    if (category) {
+      andConditions.push({ category });
+    }
+
+    // --- додаємо $and якщо є умови ---
+    if (andConditions.length > 0) {
+      filter.$and = andConditions;
+    }
+
+    // --- SORT ---
+    const sortOptions = {};
+    switch (sortBy) {
+      case 'date':
+        sortOptions.date = -1;
+        break;
+      case 'title':
+        sortOptions.title = 1;
+        break;
+      case 'oldest':
+        sortOptions.createdAt = 1;
+        break;
+      case 'newest':
+      default:
+        sortOptions.createdAt = -1;
+    }
+
+    // --- QUERY ---
+    const memories = await Memory.find(filter)
+      .sort(sortOptions)
+      .skip(parseInt(skip))
+      .limit(Math.min(parseInt(limit), 100))
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      count: memories.length,
+      data: memories
+    });
+
+  } catch (err) {
+    console.error('Error searching memories:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Error searching memories',
+      error: err.message
+    });
+  }
+};
+
+// Отримати всі теги користувача
+exports.getAllTags = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const friendships = await Friendship.find({ users: userId });
+    const friendshipIds = friendships.map(f => f._id);
+
+    const groups = await Group.find({ members: userId });
+    const groupIds = groups.map(g => g._id);
+
+    const memories = await Memory.find({
+      $or: [
+        { entityType: 'Friendship', entity: { $in: friendshipIds } },
+        { entityType: 'Group', entity: { $in: groupIds } }
+      ]
+    }).select('tags');
+
+    const tagsSet = new Set();
+    memories.forEach(memory => {
+      if (memory.tags && Array.isArray(memory.tags)) {
+        memory.tags.forEach(tag => tagsSet.add(tag));
+      }
+    });
+
+    const tags = Array.from(tagsSet).sort();
+
+    res.status(200).json({
+      success: true,
+      count: tags.length,
+      data: tags
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching tags',
+      error: err.message
+    });
+  }
+};

@@ -11,6 +11,15 @@ const FriendshipSchema = new mongoose.Schema({
   categories: {
     type: [String], 
     default: []
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted'],
+    default: 'pending'
+  },
+  requester: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 }, { timestamps: true });
 
