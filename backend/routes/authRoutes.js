@@ -5,7 +5,7 @@ const { protect } = require('../middleware/auth');
 const { validateUserInput } = require('../middleware/validation');
 const router = express.Router();
 
-router.post('/register', validateUserInput, upload.single('avatar'), register);
+router.post('/register', upload.single('avatar'), validateUserInput, register);
 router.post('/login', validateUserInput, login);
 router.post('/logout', logout);
 router.get('/me', protect, getMe);

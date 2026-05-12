@@ -1,0 +1,121 @@
+/* ============================================
+   ACCESSIBLE BUTTON SYSTEM (High Visibility)
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  /* Чітка межа, щоб форму було видно завжди */
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+
+  /* Чіткий шрифт */
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  /* Збільшено для читабельності */
+
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+  text-decoration: none;
+}
+
+/* --- Primary (Orange) --- 
+   Тепер це солідний колір з високим контрастом
+*/
+.btn--primary {
+  background-color: var(--accent);
+  color: #FFFFFF;
+  border-color: #D36A15;
+  /* Темніша межа для чіткості */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn--primary:hover {
+  background-color: #E06F12;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Secondary (Purple/Lavender) --- 
+   Раніше вона була майже прозорою, тепер має чітку форму
+*/
+.btn--secondary {
+  background-color: #F3EEFA;
+  /* Світлий, але видимий фон */
+  color: var(--accent-strong);
+  border-color: var(--accent-soft);
+  /* Лавандова межа */
+}
+
+.btn--secondary:hover {
+  background-color: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+/* --- Ghost (Outline) --- 
+   Для менш важливих дій, але з чітким контуром
+*/
+.btn--ghost {
+  background-color: transparent;
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+  /* Видима сіра межа */
+}
+
+.btn--ghost:hover {
+  background-color: #F3F4F6;
+  border-color: var(--text-primary);
+}
+
+/* --- Danger (Red) --- */
+.btn--danger {
+  background-color: #FFF1F0;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn--danger:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+/* Стан фокусу для навігації клавіатурою (важливо для доступності) */
+.btn:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+/* Стан завантаження */
+.btn--loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.btn__spinner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Стан активності (натискання) */
+.btn:active {
+  transform: translateY(1px);
+  filter: brightness(0.9);
+}

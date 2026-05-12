@@ -1,8 +1,9 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useState, useRef } from "react";
 import FriendsAndGroups from "../../features/friends/FriendsAndGroups";
+import { MessageCircle, MailOpen } from "lucide-react";
 import "./Chat.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -20,7 +21,11 @@ export default function Chat() {
   const [text, setText] = useState("");
   const messagesEndRef = useRef(null);
 
-  async function fetchMessages() {
+  function scrollToBottom() {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  const fetchMessages = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/messages?user2=${id}`, {
         credentials: "include",
@@ -31,7 +36,7 @@ export default function Chat() {
     } catch (err) {
       console.error(err);
     }
-  }
+  }, [id]);
 
   async function sendMessage() {
     if (!text.trim()) return;
@@ -49,15 +54,14 @@ export default function Chat() {
     }
   }
 
-  function scrollToBottom() {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
   useEffect(() => {
-    fetchMessages();
+    const loadMessages = async () => {
+      await fetchMessages();
+    };
+    loadMessages();
     const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
-  }, [id]);
+  }, [fetchMessages]);
 
   return (
     <div className="chat-page">
@@ -69,7 +73,9 @@ export default function Chat() {
       {/* Chat */}
       <div className="chat-wrapper">
         <div className="chat-header">
-          <div className="chat-header-avatar">💬</div>
+          <div className="chat-header-avatar">
+            <MessageCircle size={20} />
+          </div>
           <div className="chat-header-info">
             <h2>Чат</h2>
             <span>онлайн</span>
@@ -79,7 +85,9 @@ export default function Chat() {
         <div className="chat-messages">
           {messages.length === 0 ? (
             <div className="chat-empty">
-              <div className="chat-empty-icon">💌</div>
+              <div className="chat-empty-icon">
+                <MailOpen size={40} strokeWidth={1.5} />
+              </div>
               <p>Поки що немає повідомлень. Напиши першим!</p>
             </div>
           ) : (

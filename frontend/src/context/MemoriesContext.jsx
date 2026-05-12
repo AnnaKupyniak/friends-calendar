@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
 import axios from "axios";
 
@@ -17,14 +17,7 @@ export function MemoriesProvider({ children }) {
   const [isSearching, setIsSearching] = useState(false);
   const ITEMS_PER_PAGE = 50;
 
-  useEffect(() => {
-    if (user) {
-      setPage(1);
-      fetchMemories(1);
-    }
-  }, [user]);
-
-  async function fetchMemories(pageNum = 1) {
+  const fetchMemories = useCallback(async (pageNum = 1) => {
     if (loading && pageNum !== 1) return;
     
     try {
@@ -48,9 +41,16 @@ export function MemoriesProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [loading]);
 
-  const createMemory = async (formData) => {
+  useEffect(() => {
+    if (user) {
+      setPage(1);
+      fetchMemories(1);
+    }
+  }, [user, fetchMemories]);
+
+  const createMemory = useCallback(async (formData) => {
     try {
       const response = await axios.post(`${API_URL}/api/memories`, formData, {
         withCredentials: true,
@@ -68,9 +68,9 @@ export function MemoriesProvider({ children }) {
       );
       throw error;
     }
-  };
+  }, []);
 
-  const createComment = async (memoryId, fieldData) => {
+  const createComment = useCallback(async (memoryId, fieldData) => {
     try {
       const response = await axios.post(
         `${API_URL}/api/memories/${memoryId}/comments`,
@@ -86,9 +86,9 @@ export function MemoriesProvider({ children }) {
       );
       throw error;
     }
-  };
+  }, []);
 
-  const getComments = async (memoryId) => {
+  const getComments = useCallback(async (memoryId) => {
     try {
       const response = await axios.get(
         `${API_URL}/api/memories/${memoryId}/comments`,
@@ -103,16 +103,12 @@ export function MemoriesProvider({ children }) {
       );
       throw error;
     }
-  };
+  }, []);
 
-  async function updateMemory(memoryId, updatedData, selectedFiles = []) {
+  const updateMemory = useCallback(async (memoryId, updatedData, selectedFiles = []) => {
     try {
-      // 1. Створюємо об'єкт FormData замість звичайного об'єкта
       const formData = new FormData();
-
-      // 2. Додаємо текстові поля (title, description тощо)
       Object.keys(updatedData).forEach((key) => {
-        // Якщо це масив (наприклад, старі imageUrls), додаємо кожен елемент окремо
         if (Array.isArray(updatedData[key])) {
           updatedData[key].forEach((val) => formData.append(key, val));
         } else {
@@ -120,22 +116,19 @@ export function MemoriesProvider({ children }) {
         }
       });
 
-      // 3. Додаємо нові файли зображень
-      // Важливо: назва 'photos' має збігатися з тим, що вказано в роуті на бекенді
       if (selectedFiles.length > 0) {
         selectedFiles.forEach((file) => {
           formData.append("photos", file);
         });
       }
 
-      // 4. Відправляємо запит
       const res = await axios.put(
         `${API_URL}/api/memories/${memoryId}`,
-        formData, // Передаємо formData
+        formData,
         {
           withCredentials: true,
           headers: {
-            "Content-Type": "multipart/form-data", // Axios зазвичай ставить це автоматично для FormData
+            "Content-Type": "multipart/form-data",
           },
         },
       );
@@ -149,9 +142,9 @@ export function MemoriesProvider({ children }) {
       console.error("Update error:", err.response?.data || err.message);
       throw err;
     }
-  }
+  }, []);
 
-  async function deleteMemory(memoryId) {
+  const deleteMemory = useCallback(async (memoryId) => {
     try {
       await axios.delete(`${API_URL}/api/memories/${memoryId}`, {
         withCredentials: true,
@@ -162,48 +155,50 @@ export function MemoriesProvider({ children }) {
       console.log(err.response?.data || err.message);
       throw err;
     }
-  }
-  const getMemoryById = (memoryId) => {
+  }, []);
+
+  const searchMemories = useCallback(async (params) => {
+    try {
+      setSearchLoading(true);
+      setIsSearching(true);
+
+      const queryString = new URLSearchParams(params).toString();
+
+      const res = await axios.get(
+        `${API_URL}/api/memories/search?${queryString}`,
+        { withCredentials: true }
+      );
+
+      setSearchResults(res.data.data || []);
+      return res.data.data;
+
+    } catch (err) {
+      console.error("Search error:", err.response?.data || err.message);
+      throw err;
+    } finally {
+      setSearchLoading(false);
+    }
+  }, []);
+
+  const getAllTags = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/memories/tags`, {
+        withCredentials: true,
+      });
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching tags:", err);
+      throw err;
+    }
+  }, []);
+  const getMemoryById = useCallback((memoryId) => {
     return memories.find((m) => m._id === memoryId);
-  };
-  const searchMemories = async (params) => {
-  try {
-    setSearchLoading(true);
-    setIsSearching(true);
+  }, [memories]);
 
-    const queryString = new URLSearchParams(params).toString();
-
-    const res = await axios.get(
-      `${API_URL}/api/memories/search?${queryString}`,
-      { withCredentials: true }
-    );
-
-    setSearchResults(res.data.data || []);
-    return res.data.data;
-
-  } catch (err) {
-    console.error("Search error:", err.response?.data || err.message);
-    throw err;
-  } finally {
-    setSearchLoading(false);
-  }
-};
-const clearSearch = () => {
-  setSearchResults([]);
-  setIsSearching(false);
-};
-
-const getAllTags = async () => {
-  try {
-    const res = await axios.get(`${API_URL}/api/memories/tags`, {
-      withCredentials: true,
-    });
-    return res.data;
-  } catch (err) {
-    console.error("Error fetching tags:", err);
-    throw err;
-  }
-};
+  const clearSearch = useCallback(() => {
+    setSearchResults([]);
+    setIsSearching(false);
+  }, []);
 
   return (
     <MemoriesContext.Provider

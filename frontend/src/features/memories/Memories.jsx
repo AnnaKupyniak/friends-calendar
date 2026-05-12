@@ -1,14 +1,16 @@
 import "./Memories.css";
 import CreateMemory from "./CreateMemory";
 import Modal from "../../components/Modal/Modal";
+import Button from "../../components/Button/Button";
 import { useState, useEffect, useRef, useContext, useMemo } from "react";
 import dayjs from "dayjs";
 import MemoryCard from "./MemoryCard";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { MemoriesContext } from "../../context/MemoriesContext.jsx";
-import { MemoriesSearch } from "../../components/Search/MemoriesSearch.jsx";
+import { MemoriesSearch } from "./MemoriesSearch.jsx";
 import AddMember from "../../features/friends/AddMember.jsx";
 import { useNavigate } from "react-router-dom";
+import { MessageCircle, LayoutGrid, List, MoreVertical, Plus, ImageOff } from "lucide-react";
 
 export default function Memories({ category }) {
   const [isModalOpen, setModalIsOpen] = useState(false);
@@ -25,6 +27,7 @@ export default function Memories({ category }) {
   const { memories, searchResults, isSearching, selectedDate } = useContext(MemoriesContext);
   const { selectedEntity, removeFriend, deleteGroup, updateGroup } =
     useContext(FriendsContext);
+  const [viewMode, setViewMode] = useState("grid"); // "grid" або "list"
 
   const handleEditGroupSubmit = async (e) => {
     e.preventDefault();
@@ -54,14 +57,17 @@ export default function Memories({ category }) {
   };
 
   useEffect(() => {
-    if (isEditGroupModalOpen && selectedEntity?.data) {
-      setEditGroupForm({ name: selectedEntity.data.name });
-      setAvatarPreview(
-        selectedEntity.data.avatar
-          ? `http://localhost:5000/uploads/${selectedEntity.data.avatar}`
-          : null,
-      );
-    }
+    const initForm = () => {
+      if (isEditGroupModalOpen && selectedEntity?.data) {
+        setEditGroupForm({ name: selectedEntity.data.name });
+        setAvatarPreview(
+          selectedEntity.data.avatar
+            ? `http://localhost:5000/uploads/${selectedEntity.data.avatar}`
+            : null,
+        );
+      }
+    };
+    initForm();
   }, [isEditGroupModalOpen, selectedEntity]);
 
   useEffect(() => {
@@ -74,17 +80,10 @@ export default function Memories({ category }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!selectedEntity) {
-    return (
-      <div className="memories-container">
-        <p className="placeholder">Виберіть друга або групу</p>
-      </div>
-    );
-  }
-
-  const entityTypeMap = { friend: "Friendship", group: "Group" };
+  const entityTypeMap = useMemo(() => ({ friend: "Friendship", group: "Group" }), []);
 
   const filteredMemories = useMemo(() => {
+    if (!selectedEntity) return [];
     const baseMemories = isSearching ? searchResults : memories;
     return baseMemories.filter((memory) => {
       if (memory.entityType !== entityTypeMap[selectedEntity.type])
@@ -98,7 +97,15 @@ export default function Memories({ category }) {
       }
       return true;
     });
-  }, [memories, searchResults, isSearching, selectedEntity, category, selectedDate]);
+  }, [memories, searchResults, isSearching, selectedEntity, category, selectedDate, entityTypeMap]);
+
+  if (!selectedEntity) {
+    return (
+      <div className="memories-container">
+        <p className="placeholder">Виберіть друга або групу</p>
+      </div>
+    );
+  }
 
   const getFriendName = () => {
     if (!selectedEntity?.data) return "";
@@ -114,6 +121,7 @@ export default function Memories({ category }) {
 
   return (
     <div className="memories-container">
+      {/* ── Хедер: ім'я + дії ── */}
       <div className="memories-header">
         <div className="header-title-box">
           {selectedEntity?.type === "group" && (
@@ -128,83 +136,98 @@ export default function Memories({ category }) {
               />
             </div>
           )}
-          <h1>
-            {selectedEntity?.type === "friend" && getFriendName()}
-            {selectedEntity?.type === "group" && selectedEntity.data.name}
-          </h1>
-        </div>
-
-        <div className="header-search-wrapper">
-          <MemoriesSearch />
+          <div className="header-title-text">
+            <h1>
+              {selectedEntity?.type === "friend" && getFriendName()}
+              {selectedEntity?.type === "group" && selectedEntity.data.name}
+            </h1>
+            <span className="header-entity-type">
+              {selectedEntity?.type === "friend" ? "Друг" : "Група"}
+            </span>
+          </div>
         </div>
 
         <div className="header-controls">
+          {selectedEntity?.type === "friend" && (
+            <button
+              className="mem-icon-btn"
+              onClick={() => navigate(`/chat/${selectedEntity.data.user?._id}`)}
+              title="Відкрити чат"
+            >
+              <MessageCircle size={16} />
+            </button>
+          )}
+
           <button
-            className="chat-btn"
-            onClick={() => navigate(`/chat/${selectedEntity.data.user?._id}`)}
+            className="mem-icon-btn mem-view-btn"
+            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+            title={viewMode === "grid" ? "Список" : "Сітка"}
           >
-            Чат
-          </button>
-          <button
-            className="add-memory-btn"
-            onClick={() => setModalIsOpen(true)}
-          >
-            + Додати спогад
+            {viewMode === "grid" ? <List size={16} /> : <LayoutGrid size={16} />}
           </button>
 
           <div className="settings-menu-container" ref={menuRef}>
             <button
-              className="settings-dots-btn"
+              className="mem-icon-btn"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Меню"
             >
-              ⋮
+              <MoreVertical size={16} />
             </button>
 
             {isMenuOpen && (
               <div className="settings-dropdown">
                 {selectedEntity?.type === "friend" && (
-                  <button
-                    className="dropdown-item danger"
+                  <Button
+                    variant="danger"
+                    size="sm"
                     onClick={() => {
                       const friendId = selectedEntity.data.user?._id;
                       if (friendId) removeFriend(friendId);
                       setIsMenuOpen(false);
                     }}
+                    className="dropdown-btn"
                   >
                     Видалити друга
-                  </button>
+                  </Button>
                 )}
 
                 {selectedEntity?.type === "group" && (
                   <>
-                    <button
-                      className="dropdown-item"
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => {
                         setEditGroupForm({ name: selectedEntity.data.name });
                         setIsEditGroupModalOpen(true);
                         setIsMenuOpen(false);
                       }}
+                      className="dropdown-btn"
                     >
                       Редагувати групу
-                    </button>
-                    <button
-                      className="dropdown-item"
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => {
                         setIsAddFriendModalOpen(true);
                         setIsMenuOpen(false);
                       }}
+                      className="dropdown-btn"
                     >
                       Додати учасника
-                    </button>
-                    <button
-                      className="dropdown-item danger"
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
                       onClick={() => {
                         deleteGroup(selectedEntity.data._id);
                         setIsMenuOpen(false);
                       }}
+                      className="dropdown-btn"
                     >
                       Видалити групу
-                    </button>
+                    </Button>
                   </>
                 )}
               </div>
@@ -212,6 +235,40 @@ export default function Memories({ category }) {
           </div>
         </div>
       </div>
+
+      {/* ── Тулбар: пошук + додати ── */}
+      <div className="memories-toolbar">
+        <div className="toolbar-search">
+          <MemoriesSearch />
+        </div>
+        <button
+          className="mem-add-btn"
+          onClick={() => setModalIsOpen(true)}
+        >
+          <Plus size={15} />
+          Додати спогад
+        </button>
+      </div>
+
+      {filteredMemories.length > 0 ? (
+        <div className={`memories-${viewMode}`}>
+          {filteredMemories.map((memory) => (
+            <MemoryCard key={memory._id} memory={memory} />
+          ))}
+        </div>
+      ) : (
+        <div className="no-memories">
+          <ImageOff size={44} strokeWidth={1.2} className="no-memories-icon" />
+          <p>Немає спогадів для відображення</p>
+          <button
+            className="no-memories-cta"
+            onClick={() => setModalIsOpen(true)}
+          >
+            <Plus size={15} />
+            Створити перший спогад
+          </button>
+        </div>
+      )}
 
       <Modal isOpen={isModalOpen} onClose={() => setModalIsOpen(false)}>
         <CreateMemory onClose={() => setModalIsOpen(false)} />
@@ -272,38 +329,24 @@ export default function Memories({ category }) {
               />
             </div>
             <div className="modal-buttons">
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="md"
                 onClick={() => setIsEditGroupModalOpen(false)}
-                className="modal-btn modal-btn-secondary"
               >
                 Скасувати
-              </button>
-              <button type="submit" className="modal-btn modal-btn-primary">
+              </Button>
+              <Button 
+                variant="primary"
+                size="md"
+                type="submit"
+              >
                 Зберегти
-              </button>
+              </Button>
             </div>
           </form>
         </div>
       </Modal>
-
-      {filteredMemories.length > 0 ? (
-        <div className="memories-grid">
-          {filteredMemories.map((memory) => (
-            <MemoryCard key={memory._id} memory={memory} />
-          ))}
-        </div>
-      ) : (
-        <div className="no-memories">
-          <p>Немає спогадів для відображення</p>
-          <button
-            className="create-first-memory"
-            onClick={() => setModalIsOpen(true)}
-          >
-            Створити перший спогад
-          </button>
-        </div>
-      )}
     </div>
   );
 }

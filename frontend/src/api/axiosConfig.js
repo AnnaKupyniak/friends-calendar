@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;
+// Use empty string so requests go through Vite proxy (same origin = cookies work)
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -21,13 +22,10 @@ apiClient.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401) {
-      // Unauthorized - token expired or invalid
+      // Unauthorized - clear user state, ProtectedRoute handles redirect
       if (authContextRef) {
         authContextRef.setUser(null);
-        authContextRef.setError('Your session has expired. Please log in again.');
       }
-      // Redirect to login will happen via ProtectedRoute
-      window.location.href = '/login';
     } else if (status === 403) {
       // Forbidden - user doesn't have permission
       if (authContextRef) {

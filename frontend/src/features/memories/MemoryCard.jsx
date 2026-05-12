@@ -1,7 +1,9 @@
 import { useContext, useState } from "react";
 import { MemoriesContext } from "../../context/MemoriesContext";
+import Button from "../../components/Button/Button";
 import "./MemoryCard.css";
 import { useNavigate } from "react-router-dom";
+import { CalendarDays, MapPin, MessageCircle, Pencil, Trash2 } from "lucide-react";
 
 export default function MemoryCard({ memory }) {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -10,7 +12,7 @@ export default function MemoryCard({ memory }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]); // Стан для нових файлів
-  
+
   const [formData, setFormData] = useState({
     title: memory.title,
     description: memory.description,
@@ -164,62 +166,72 @@ export default function MemoryCard({ memory }) {
             </div>
 
             <div className="button-group">
-              <button className="btn-save" onClick={handleSave}>
+              <Button
+                variant="primary"
+                onClick={handleSave}
+              >
                 Зберегти
-              </button>
-              <button
-                className="btn-cancel"
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={() => {
                   setIsEditing(false);
                   setSelectedFiles([]);
                 }}
               >
                 Скасувати
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
           <>
             <div className="memory-header">
-              <h3 className="memory-title">{memory.title}</h3>
+              <div className="memory-title-wrap">
+                <h3 className="memory-title">{memory.title}</h3>
+                <div className="memory-meta">
+                  <span className="memory-meta-item">
+                    <CalendarDays size={13} className="meta-icon" />
+                    {formatDate(memory.date)}
+                  </span>
+                  <span className="memory-meta-item">
+                    <MapPin size={13} className="meta-icon" />
+                    {memory.place}
+                  </span>
+                </div>
+              </div>
               {memory.category && (
                 <span className="category-badge">{memory.category}</span>
               )}
             </div>
 
-            <div className="memory-meta">
-              <span>{formatDate(memory.date)}</span>
-              <span>{memory.place}</span>
-            </div>
-
             <p className="memory-description">{memory.description}</p>
 
-            <footer className="memory-footer">
-              <div className="memory-actions">
-                <button
-                  className="action-link edit"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Редагувати
-                </button>
-                <button
-                  className="action-link delete"
-                  onClick={() => deleteMemory(memory._id)}
-                >
-                  Видалити
-                </button>
-              </div>
-
-              <span className="memory-created">
-                Додано: {new Date(memory.createdAt).toLocaleDateString("uk-UA")}
-              </span>
+            <div className="memory-footer">
               <button
-                className="action-link comments"
+                className="comments-btn-refined"
                 onClick={() => navigate(`/comments/${memory._id}`)}
               >
-                Коментарі
+                <MessageCircle size={14} />
+                <span>Коментарі</span>
               </button>
-            </footer>
+
+              <div className="action-buttons-wrap">
+                <button
+                  className="action-icon-circle edit"
+                  onClick={() => setIsEditing(true)}
+                  title="Редагувати"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  className="action-icon-circle delete"
+                  onClick={() => deleteMemory(memory._id)}
+                  title="Видалити"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
           </>
         )}
       </div>

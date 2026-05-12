@@ -1,4 +1,4 @@
-﻿import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FriendsContext } from "../../context/FriendsContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -12,13 +12,7 @@ export default function AddMember({ onClose }) {
   } = useContext(FriendsContext);
 
   const [query, setQuery] = useState("");
-  const [members, setMembers] = useState([]);
-
-  useEffect(() => {
-    if (selectedEntity?.data?.members) {
-      setMembers(selectedEntity.data.members);
-    }
-  }, [selectedEntity]);
+  const members = selectedEntity?.data?.members || [];
 
   const friendsList = getFriendsList() || [];
 
@@ -40,7 +34,6 @@ export default function AddMember({ onClose }) {
   });
 
   async function handleAddMember(user) {
-    setMembers((prev) => [...prev, user]);
     try {
       await addMembersToGroup(selectedEntity.data._id, [user._id]);
     } catch (e) {
@@ -49,7 +42,6 @@ export default function AddMember({ onClose }) {
   }
 
   async function handleRemoveMember(userId) {
-    setMembers((prev) => prev.filter((m) => m._id !== userId));
     try {
       if (removeMemberFromGroup) {
         await removeMemberFromGroup(selectedEntity.data._id, userId);

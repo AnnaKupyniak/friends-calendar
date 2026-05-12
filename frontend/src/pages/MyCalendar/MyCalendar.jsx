@@ -1,4 +1,4 @@
-﻿import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { PickersDay } from "@mui/x-date-pickers/PickersDay";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -6,6 +6,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/uk";
 import isBetween from "dayjs/plugin/isBetween";
+import { Camera, CalendarDays, Flame, Inbox } from "lucide-react";
 
 import { AuthContext } from "../../context/AuthContext";
 import { FriendsContext } from "../../context/FriendsContext";
@@ -26,10 +27,9 @@ export default function MyCalendar() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(dayjs());
 
-  if (!user) return <div className="mycal-loading">Завантаження...</div>;
-
   // Всі мої спогади (де я учасник)
   const myMemories = useMemo(() => {
+    if (!user) return [];
     return memories.filter((m) => {
       return (
         String(m.createdBy) === String(user._id) ||
@@ -38,7 +38,7 @@ export default function MyCalendar() {
         groups.some((g) => String(g._id) === String(m.entity))
       );
     });
-  }, [memories, user._id, friendships, groups]);
+  }, [memories, user, friendships, groups]);
 
   // Дати що мають спогади (для підсвічування)
   const memoryDates = useMemo(() => {
@@ -93,6 +93,8 @@ export default function MyCalendar() {
     return [...list].sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [selectedDate, memoriesForDate, myMemories]);
 
+  if (!user) return <div className="mycal-loading">Завантаження...</div>;
+
   const memoriesTitle = selectedDate 
     ? "Спогади за " + selectedDate.format("D MMMM YYYY")
     : "Всі спогади";
@@ -123,14 +125,14 @@ export default function MyCalendar() {
         <div className="mycal-stats-bar">
           <div className="mycal-stats-container">
             <div className="mycal-stat-item">
-              <div className="mycal-stat-icon">📸</div>
+              <div className="mycal-stat-icon"><Camera size={20} strokeWidth={1.8} /></div>
               <div className="mycal-stat-content">
                 <span className="mycal-stat-num">{monthStats.total}</span>
                 <span className="mycal-stat-label">спогадів</span>
               </div>
             </div>
             <div className="mycal-stat-item">
-              <div className="mycal-stat-icon">🗓️</div>
+              <div className="mycal-stat-icon"><CalendarDays size={20} strokeWidth={1.8} /></div>
               <div className="mycal-stat-content">
                 <span className="mycal-stat-num">{monthStats.activeDays}</span>
                 <span className="mycal-stat-label">активних днів</span>
@@ -138,7 +140,7 @@ export default function MyCalendar() {
             </div>
             {monthStats.busiest && (
               <div className="mycal-stat-item">
-                <div className="mycal-stat-icon">🔥</div>
+                <div className="mycal-stat-icon"><Flame size={20} strokeWidth={1.8} /></div>
                 <div className="mycal-stat-content">
                   <span className="mycal-stat-num">{monthStats.busiest.date}</span>
                   <span className="mycal-stat-label">найактивніший ({monthStats.busiest.count})</span>
@@ -216,12 +218,12 @@ export default function MyCalendar() {
             </div>
 
             {displayedMemories.length > 0 ? (
-              <div className="mycal-memories-grid">
+              <div className="memories-grid">
                 {displayedMemories.map((memory) => <MemoryCard key={memory._id} memory={memory} />)}
               </div>
             ) : (
               <div className="mycal-empty-state">
-                <span className="mycal-empty-icon">📭</span>
+                <Inbox size={40} strokeWidth={1.2} className="mycal-empty-icon" />
                 <p>{selectedDate ? "На цю дату спогадів не знайдено." : "У вас поки немає спогадів."}</p>
               </div>
             )}

@@ -25,9 +25,11 @@ app.use(cookieParser());
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'];
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const isLocal = origin && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'));
+    if (!origin || allowedOrigins.includes(origin) || isLocal) {
       callback(null, true);
     } else {
+      console.log('Rejected origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },

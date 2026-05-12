@@ -1,50 +1,221 @@
-*{
+/* ============================================
+   DESIGN SYSTEM - 2024 (Refined)
+   Friends Calendar - Impeccable Version
+   ============================================ */
+
+:root {
+  /* Layout */
+  --header-height: 57px;
+
+  /* Primary Colors - Fixed to User Request */
+  --accent: #F5811F;
+  /* Vibrant Orange */
+  --accent-soft: #CAA8F5;
+  /* Soft Lavender */
+  --accent-strong: #592E83;
+  /* Deep Royal Purple */
+
+  /* Derived Palette for Depth */
+  --accent-light: rgba(245, 129, 31, 0.1);
+  --accent-strong-soft: rgba(89, 46, 131, 0.05);
+  --accent-gradient: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.5);
+
+  /* Semantic Colors */
+  --bg: #FBFBFE;
+  /* Ultra-clean background */
+  --surface: #FFFFFF;
+  --border: rgba(89, 46, 131, 0.12);
+  --danger: #E11D48;
+  --success: #10B981;
+  --warning: #F59E0B;
+
+  /* Text Hierarchy */
+  --text-primary: #1A0F24;
+  /* Deepest Purple-Black */
+  --text-secondary: #4A3A5E;
+  /* Muted Deep Purple */
+  --text-muted: #8E7FA1;
+  /* Softest readable purple */
+  --text-on-accent: #FFFFFF;
+
+  /* Spacing System */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows - Layered for Realism */
+  --shadow-sm: 0 2px 4px rgba(89, 46, 131, 0.04);
+  --shadow-md: 0 8px 16px rgba(89, 46, 131, 0.08);
+  --shadow-lg: 0 16px 32px rgba(89, 46, 131, 0.12);
+
+  /* Transitions */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Responsive Spacing Helpers */
+  --space-unit: clamp(0.5rem, 1vw, 1rem);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-li {
-  list-style: none;
-}
-body{
-  background-color: #eff1fc !important;
-}
-:root {
-  --accent: #F5811F;
-  --accent-soft: #CAA8F5;
-  --accent-strong: #592E83;
-
-  --bg: #ffffff;
-  --surface: #FFFFFF;
-  --border: #E9DDF8;
-
-  --danger: #D94F30;
-
-  --text-primary: #2D1B3D;
-  --text-muted: #6E5A85;
-
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-
-  --shadow-sm: 0 2px 8px rgba(89, 46, 131, 0.06);
-  --shadow-md: 0 6px 24px rgba(89, 46, 131, 0.12);
-
-  --transition: 0.18s ease;
-
-  /* Skeleton loading vars */
-  --skeleton-bg: #E9DDF8;
-  --skeleton-highlight: #F5EEFF;
+  -webkit-tap-highlight-color: transparent;
 }
 
-@keyframes skeleton-loading {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
+body {
+  background-color: var(--bg);
+  color: var(--text-secondary);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  font-size: clamp(0.9rem, 0.8rem + 0.5vw, 1rem);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-body {
+  padding-top: var(--header-height);
+}
+
+/* Typography Refinement */
+h1, h2, h3, h4 {
+  color: var(--text-primary);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-sm);
+  font-family: 'Unbounded', 'DM Sans', sans-serif;
+}
+
+h1 { font-size: clamp(2rem, 1.5rem + 2vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem); }
+h3 { font-size: clamp(1.25rem, 1.1rem + 1vw, 1.75rem); }
+h4 { font-size: clamp(1.1rem, 1rem + 0.5vw, 1.25rem); }
+
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* ============================================
+   COMPONENTS
+   ============================================ */
+
+/* Glass Card */
+.card-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: var(--transition);
+}
+
+.card-glass:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Premium Button - Fixed Contrast */
+.btn-premium {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  /* Fixed from #F5811F to White */
+  border: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(245, 129, 31, 0.3);
+}
+
+.btn-premium:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(245, 129, 31, 0.4);
+}
+
+.btn-premium:active {
+  transform: scale(0.98);
+}
+
+/* Modern Inputs */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid transparent;
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+input:hover {
+  border-color: var(--accent-soft);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(245, 129, 31, 0.15);
+}
+
+/* Skeleton Animation */
 .skeleton {
   background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-highlight) 50%, var(--skeleton-bg) 75%);
   background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite;
-  border-radius: 4px;
+  animation: skeleton-loading 1.8s infinite ease-in-out;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

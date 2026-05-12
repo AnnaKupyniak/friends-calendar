@@ -1,8 +1,9 @@
-﻿import { useContext, useState, useMemo } from "react";
+import { useContext, useState, useMemo } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { FriendsContext } from "../../context/FriendsContext";
 import { MemoriesContext } from "../../context/MemoriesContext";
 import MemoryCard from "../../features/memories/MemoryCard";
+import Button from "../../components/Button/Button";
 import { Bar, Doughnut } from "react-chartjs-2";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
@@ -43,13 +44,11 @@ export default function Profile() {
   const [editForm, setEditForm] = useState({ fullName: user?.fullName || '', username: user?.username || '' });
   const [editGroupForm, setEditGroupForm] = useState({ name: '' });
 
-  if (!user) return <div className="loading">Завантаження...</div>;
-
   const selectedFriendship = friendships.find(
     (f) => f._id === selectedFriendshipId,
   );
   const selectedFriend = selectedFriendship
-    ? selectedFriendship.users.find((u) => u._id !== user._id)
+    ? selectedFriendship.users.find((u) => u && u._id !== user?._id)
     : null;
   const selectedGroup = groups.find((g) => g._id === selectedGroupId) || null;
 
@@ -228,6 +227,7 @@ export default function Profile() {
       alert('Помилка при оновленні групи');
     }
   };
+  if (!user) return <div className="loading">Завантаження...</div>;
 
   return (
     <div className="profile-page">
@@ -257,12 +257,20 @@ export default function Profile() {
               </p>
             </div>
             <div className="hero-buttons">
-              <button onClick={() => setIsEditing(true)} className="edit-btn">
+              <Button 
+                variant="primary"
+                size="md"
+                onClick={() => setIsEditing(true)}
+              >
                 Редагувати профіль
-              </button>
-              <button onClick={logout} className="logout-btn-outline">
+              </Button>
+              <Button 
+                variant="secondary"
+                size="md"
+                onClick={logout}
+              >
                 Вийти
-              </button>
+              </Button>
             </div>
           </div>
         </div>

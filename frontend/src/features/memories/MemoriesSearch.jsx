@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { MemoriesContext } from "../../context/MemoriesContext";
-import "../../styles/memoriesSearch.css";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+import "./MemoriesSearch.css";
 
 export function MemoriesSearch() {
   const {
@@ -21,11 +22,7 @@ export function MemoriesSearch() {
   const [sortBy, setSortBy] = useState('date');
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    loadTags();
-  }, []);
-
-  const loadTags = async () => {
+  const loadTags = useCallback(async () => {
     try {
       const res = await getAllTags();
       setAllTags(res.data || res); // 🔥 захист від різних форматів
@@ -33,7 +30,11 @@ export function MemoriesSearch() {
       console.error('Error loading tags:', error);
       setError('Не вдалось завантажити теги');
     }
-  };
+  }, [getAllTags]);
+
+  useEffect(() => {
+    loadTags();
+  }, [loadTags]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -86,7 +87,7 @@ export function MemoriesSearch() {
     <div className="inline-search-container">
       <div className="inline-search-main">
         <div className="inline-search-input-wrapper">
-          <span className="search-icon">🔍</span>
+          <Search size={15} className="search-icon-svg" />
           <input
             className="inline-search-input"
             value={query}
@@ -102,7 +103,7 @@ export function MemoriesSearch() {
           onClick={() => setShowFilters(!showFilters)} 
           title="Фільтри"
         >
-          {showFilters ? '✕' : '⚙️'}
+          {showFilters ? <X size={14} /> : <SlidersHorizontal size={14} />}
         </button>
       </div>
 

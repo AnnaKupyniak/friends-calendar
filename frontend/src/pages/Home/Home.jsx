@@ -3,7 +3,7 @@ import Categories from "../../features/categories/Categories";
 import FriendsAndGroups from "../../features/friends/FriendsAndGroups";
 import Memories from "../../features/memories/Memories";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import './Home.css';
 
 export default function Home() {

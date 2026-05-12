@@ -69,7 +69,7 @@ export default function CreateMemory({ onClose }) {
     }
 
     try {
-      const result = await createMemory(formData);
+      await createMemory(formData);
 
       if (categoryValue && categoryValue.trim()) {
         await ensureCategoryExists(categoryValue);

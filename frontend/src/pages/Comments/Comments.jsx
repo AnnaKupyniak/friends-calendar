@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MemoriesContext } from "../../context/MemoriesContext";
 import MemoryCard from "../../features/memories/MemoryCard";
+import { Send } from "lucide-react";
 import "./Comments.css";
 
 export default function Comments() {
@@ -13,17 +14,16 @@ export default function Comments() {
   const memory = getMemoryById(memoryId);
 
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const comments = await getComments(memoryId);
+        setMemoryComments(comments);
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchComments();
-  }, [memoryId]);
-
-  const fetchComments = async () => {
-    try {
-      const comments = await getComments(memoryId);
-      setMemoryComments(comments);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  }, [getComments, memoryId]);
 
   const addComment = async () => {
     if (!commentText.trim()) return;
@@ -36,16 +36,20 @@ export default function Comments() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") addComment();
+  };
+
   if (!memory) return <p>Спогад не знайдено</p>;
 
   return (
     <div className="comments-page">
-      {/* Ліва колонка */}
+      {/* Ліва колонка — картка спогаду */}
       <div className="memory-column">
         <MemoryCard memory={memory} />
       </div>
 
-      {/* Права колонка */}
+      {/* Права колонка — коментарі */}
       <div className="comments-column">
         <h1>Коментарі</h1>
 
@@ -54,21 +58,27 @@ export default function Comments() {
             type="text"
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Напиши коментар..."
           />
-          <button onClick={addComment}>Додати</button>
+          <button className="comment-submit-btn" onClick={addComment}>
+            <Send size={14} />
+            Додати
+          </button>
         </div>
 
         <div className="comments-list">
           {memoryComments.length > 0 ? (
             memoryComments.map((comment) => (
               <div key={comment._id} className="comment-item">
-                <strong>{comment.author}</strong>
-                <p>{comment.text}</p>
+                <span className="comment-author">{comment.author}</span>
+                <p className="comment-text">{comment.text}</p>
               </div>
             ))
           ) : (
-            <p>Коментарі відсутні</p>
+            <div className="comments-empty">
+              Коментарів ще немає — будь першим!
+            </div>
           )}
         </div>
       </div>

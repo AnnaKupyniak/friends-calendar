@@ -29,21 +29,23 @@
 .action-button {
   border: 1.5px solid var(--border);
   background: transparent;
-  color: var(--accent-strong);
-  padding: 6px 14px;
+  color: var(--text-muted);
+  padding: 5px 12px;
   border-radius: var(--radius-sm);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   cursor: pointer;
   transition: var(--transition);
   white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .action-button:hover {
-  background: rgba(89, 46, 131, 0.04);
-  border-color: var(--accent-strong);
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 
@@ -85,19 +87,19 @@
 }
 
 .active-item {
-  background: rgba(89, 46, 131, 0.08) !important;
-  color: var(--accent-strong) !important;
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
 }
 
 .active-item span {
-  color: var(--accent-strong);
+  color: var(--accent);
 }
 
 .active-item img {
   border-color: var(--accent) !important;
 }
 
-.friends-list > div + div {
+.friends-list>div+div {
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--border);

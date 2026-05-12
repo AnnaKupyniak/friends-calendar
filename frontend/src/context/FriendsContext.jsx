@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
 import axios from "axios";
 
@@ -33,6 +33,39 @@ export function FriendsProvider({ children }) {
     }
   }, [selectedEntity]);
 
+  const fetchFriends = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/users/friends`, {
+        withCredentials: true,
+      });
+      console.log("Fetched friendships:", res.data.friendships);
+      setFriendships(res.data.friendships || []);
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+    }
+  }, []);
+
+  const fetchFriendRequests = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/users/friends/requests`, {
+        withCredentials: true,
+      });
+      console.log("FriendRequests API response:", res.data);
+      setFriendRequests(res.data.requests || []);
+    } catch (err) {
+      console.log("Error fetching requests:", err.response?.data || err.message);
+    }
+  }, []);
+
+  const fetchGroups = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/groups`, { withCredentials: true });
+      setGroups(res.data.groups || []);
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       Promise.all([fetchFriends(), fetchFriendRequests(), fetchGroups()]).finally(() =>
@@ -45,40 +78,7 @@ export function FriendsProvider({ children }) {
       setGroups([]);
       setSelectedEntity(null);
     }
-  }, [user]);
-
-  async function fetchFriends() {
-    try {
-      const res = await axios.get(`${API_URL}/api/users/friends`, {
-        withCredentials: true,
-      });
-      console.log("Fetched friendships:", res.data.friendships);
-      setFriendships(res.data.friendships || []);
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-    }
-  }
-
-  async function fetchFriendRequests() {
-    try {
-      const res = await axios.get(`${API_URL}/api/users/friends/requests`, {
-        withCredentials: true,
-      });
-      console.log("FriendRequests API response:", res.data); // ДЕТАЛЬНИЙ ЛОГ
-      setFriendRequests(res.data.requests || []);
-    } catch (err) {
-      console.log("Error fetching requests:", err.response?.data || err.message);
-    }
-  }
-
-  async function fetchGroups() {
-    try {
-      const res = await axios.get(`${API_URL}/api/groups`, { withCredentials: true });
-      setGroups(res.data.groups || []);
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-    }
-  }
+  }, [user, fetchFriends, fetchFriendRequests, fetchGroups]);
 
   async function addFriend(friendId) {
     try {
@@ -136,7 +136,7 @@ export function FriendsProvider({ children }) {
     }
   }
 
-  async function findFriend(query) {
+  const findFriend = useCallback(async (query) => {
     if (!query) {
       setSearchResults([]);
       return;
@@ -150,7 +150,7 @@ export function FriendsProvider({ children }) {
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
-  }
+  }, []);
 
   async function addGroup(newGroup) {
     try {

@@ -34,7 +34,7 @@
 
 body {
   font-family: 'Manrope', sans-serif;
-  background: #F7F3FD;
+  background: #F6F4FA;
   color: var(--text-primary);
 }
 
@@ -51,15 +51,16 @@ body {
 /* ─── Profile Page ──────────────────────────────────── */
 .profile-page {
   min-height: 100vh;
-  background: #F7F3FD;
+  background: #F6F4FA;
 }
 
 /* ─── Hero Section ──────────────────────────────────── */
 .profile-hero {
   position: relative;
-  padding: 56px 40px 80px;
-  background: #F7F3FD;
+  padding: clamp(3rem, 8vh, 5rem) var(--space-lg);
+  background: var(--surface);
   overflow: hidden;
+  border-bottom: 1px solid var(--border);
 }
 
 .profile-hero::before {
@@ -150,54 +151,6 @@ body {
   letter-spacing: 0.01em;
 }
 
-/* ─── Logout Button ─────────────────────────────────── */
-.logout-btn-outline {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.12);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 24px;
-  cursor: pointer;
-  transition: var(--transition);
-  backdrop-filter: blur(10px);
-  white-space: nowrap;
-}
-
-.logout-btn-outline:hover {
-  background: rgba(89, 46, 131, 0.04);
-  border-color: var(--accent-strong);
-  color: var(--accent-strong);
-  transform: translateY(-2px);
-}
-
-/* ─── Edit Button ────────────────────────────────────── */
-.edit-btn {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--accent);
-  border: 1.5px solid var(--accent);
-  border-radius: var(--radius-sm);
-  padding: 10px 24px;
-  cursor: pointer;
-  transition: var(--transition);
-  white-space: nowrap;
-}
-
-.edit-btn:hover {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
-  transform: translateY(-2px);
-}
-
 /* ─── Profile Layout ────────────────────────────────── */
 .profile-layout {
   display: grid;
@@ -228,7 +181,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--border);
-  background: #F9F7FC;
+  background: #EEE9F7;
 }
 
 .sidebar-tabs button {
@@ -344,7 +297,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--border);
-  background: #F9F7FC;
+  background: #EEE9F7;
   margin: -12px -12px 12px -12px;
 }
 
@@ -352,7 +305,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent-soft), var(--accent-strong));
+  background: var(--accent-strong);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -421,7 +374,7 @@ body {
 
 .period-switch {
   display: flex;
-  background: #F9F7FC;
+  background: #EEE9F7;
   border-radius: var(--radius-sm);
   padding: 4px;
   gap: 3px;
@@ -457,7 +410,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #F9F7FC;
+  background: #EEE9F7;
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   border: 1px solid var(--border);
@@ -505,7 +458,7 @@ body {
 .chart {
   height: auto;
   min-height: 280px;
-  background: #F9F7FC;
+  background: #EEE9F7;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   padding: 20px;
@@ -521,7 +474,7 @@ body {
 
 /* ─── Places Section (Правий блок з колом) ─────────── */
 .places-section {
-  background: #F9F7FC;
+  background: #EEE9F7;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   padding: 20px;
@@ -581,9 +534,9 @@ body {
 
 /* ─── Average Card ──────────────────────────────────── */
 .stat-card-avg {
-  background: linear-gradient(160deg, var(--accent-strong) 0%, #7B3FB5 100%);
+  background: var(--accent-strong);
   border: none;
-  box-shadow: 0 8px 24px rgba(89, 46, 131, 0.2);
+  box-shadow: 0 6px 20px rgba(89, 46, 131, 0.2);
 }
 
 .stat-card-avg .stat-label {
@@ -597,7 +550,7 @@ body {
 
 /* ─── Total Card ────────────────────────────────────── */
 .stat-card-total {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
 }
 
@@ -611,7 +564,7 @@ body {
 
 /* ─── Places Section ────────────────────────────────── */
 .places-section {
-  background: #F9F7FC;
+  background: #EEE9F7;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   padding: 20px;
@@ -711,7 +664,7 @@ body {
   font-family: 'Manrope', sans-serif;
   font-size: 1rem;
   color: var(--text-primary);
-  background: #F9F7FC;
+  background: #EEE9F7;
   transition: var(--transition);
 }
 
@@ -782,69 +735,49 @@ body {
 }
 
 /* ─── Responsive ────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .profile-layout {
-    grid-template-columns: 240px 1fr;
-    gap: 16px;
-    padding: 0 24px;
-  }
-
-  .chart-container {
-    grid-template-columns: 1fr 110px;
-  }
-
-  .profile-hero {
-    padding: 48px 24px 64px;
-  }
-}
-
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .profile-layout {
     grid-template-columns: 1fr;
-    padding: 0 16px;
-    margin-top: -40px;
+    gap: 32px;
+    padding: 0 32px;
+    margin-top: -30px;
   }
 
   .sidebar {
     position: static;
+    width: 100%;
     max-height: none;
   }
 
-  .stats {
-    margin-top: 16px;
-    padding: 20px;
-  }
-
   .profile-hero {
-    padding: 36px 16px 56px;
+    padding: 60px 32px 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-hero {
+    padding: 48px 20px 64px;
+    border-radius: 0;
   }
 
   .hero-content {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-
-  .profile-avatar-new {
-    width: 100px;
-    height: 100px;
+    align-items: center;
+    text-align: center;
   }
 
   .hero-info-wrapper {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    align-items: center;
+    gap: 24px;
   }
 
   .user-display-name {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
   }
 
-  .stats-header {
-    flex-direction: column;
-    align-items: flex-start;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 16px;
+  .stats {
+    padding: 24px;
   }
 
   .chart-container {
@@ -852,77 +785,35 @@ body {
   }
 
   .stats-cards {
-    flex-direction: row;
-    gap: 12px;
-  }
-
-  .stat-card {
-    flex: 1;
-    min-height: 100px;
-    padding: 12px;
-  }
-
-  .stat-card .stat-value {
-    font-size: 1.6rem;
-  }
-
-  .memories {
     grid-template-columns: 1fr;
   }
 
-  .places-chart {
-    height: 240px;
-  }
-
-  .friend-list {
-    max-height: 280px;
+  .profile-layout {
+    padding: 0 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .profile-page {
-    padding: 0;
-  }
-
-  .profile-hero {
-    padding: 28px 12px 40px;
-  }
-
-  .hero-content {
-    gap: 12px;
-  }
-
-  .profile-avatar-new {
-    width: 80px;
-    height: 80px;
-  }
-
   .user-display-name {
-    font-size: 1.3rem;
-  }
-
-  .stats {
-    gap: 16px;
-    padding: 16px;
-  }
-
-  .stats-header h2 {
-    font-size: 1.1rem;
-  }
-
-  .chart {
-    height: 200px;
+    font-size: 1.5rem;
   }
 
   .stat-card .stat-value {
-    font-size: 1.4rem;
+    font-size: 1.8rem;
   }
 
-  .sidebar {
-    border-radius: 12px;
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
   }
 
-  .stats {
-    border-radius: 12px;
+  .hero-buttons button {
+    width: 100%;
   }
+}
+
+/* Прибираємо застарілі оверрайди модалок */
+.edit-profile-modal-content {
+  background: transparent !important;
+  z-index: auto !important;
 }

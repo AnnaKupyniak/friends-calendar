@@ -1,12 +1,15 @@
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { AlertCircle, ImagePlus } from "lucide-react";
+import "./auth.css";
 
 export default function Register() {
   const { register, user, error: authError, setError: setAuthError } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [avatarName, setAvatarName] = useState("");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -16,26 +19,17 @@ export default function Register() {
     avatar: null,
   });
 
-  // Очищаємо помилки при завантаженні сторінки
-  useEffect(() => {
-    setError("");
-    setAuthError(null);
-  }, []);
-
-  // Переходимо на домашню сторінку якщо користувач був зареєстрований
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+  useEffect(() => { setError(""); setAuthError(null); }, []);
+  useEffect(() => { if (user) navigate("/"); }, [user, navigate]);
 
   function handleChange(e) {
     if (e.target.type === "file") {
-      setFormData({ ...formData, avatar: e.target.files[0] });
+      const file = e.target.files[0];
+      setFormData({ ...formData, avatar: file });
+      setAvatarName(file ? file.name : "");
     } else {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
-    // Очищаємо помилку при заповненні форми
     if (error) setError("");
     if (authError) setAuthError(null);
   }
@@ -66,136 +60,71 @@ export default function Register() {
     }
   }
 
+  const fields = [
+    { name: "username", label: "Нікнейм", placeholder: "your_username" },
+    { name: "fullName", label: "Повне ім'я", placeholder: "Іван Іваненко" },
+    { name: "email", label: "Email", placeholder: "example@mail.com", type: "email" },
+    { name: "password", label: "Пароль", placeholder: "••••••••", type: "password" },
+  ];
+
   return (
-    <div className="container vh-100 d-flex justify-content-center align-items-center">
-      <div
-        className="card border-0 p-4"
-        style={{
-          width: "100%",
-          maxWidth: "450px",
-          borderRadius: "22px",
-          background: "var(--surface)",
-          boxShadow: "0 14px 36px rgba(89, 46, 131, 0.15)",
-        }}
-      >
-        <h3
-          className="text-center mb-4"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--accent), var(--accent-strong))",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            fontWeight: 600,
-          }}
-        >
-          Реєстрація
-        </h3>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <h1>Friends Calendar</h1>
+          <p>Створіть свій акаунт</p>
+        </div>
+
         {(error || authError) && (
-          <div
-            className="alert alert-danger d-flex align-items-center mb-3"
-            role="alert"
-            style={{
-              borderRadius: "10px",
-              border: "1px solid #f5365c",
-              background: "rgba(245, 54, 92, 0.1)",
-              color: "#f5365c",
-              padding: "12px 14px",
-            }}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{ marginRight: "10px", flexShrink: 0 }}
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
+          <div className="auth-error">
+            <AlertCircle size={16} />
             <span>{error || authError}</span>
           </div>
         )}
-        <form onSubmit={handleSubmit}>
-          {["username", "fullName", "email", "password"].map((field, idx) => (
-            <div className="mb-3" key={idx}>
-              <label
-                className="form-label"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {field === "fullName"
-                  ? "Прізвище та ім'я"
-                  : field.charAt(0).toUpperCase() + field.slice(1)}
-              </label>
 
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {fields.map(({ name, label, placeholder, type = "text" }) => (
+            <div className="auth-field" key={name}>
+              <label className="auth-label">{label}</label>
               <input
-                name={field}
-                type={
-                  field === "email"
-                    ? "email"
-                    : field === "password"
-                      ? "password"
-                      : "text"
-                }
-                className="form-control"
+                name={name}
+                type={type}
+                className="auth-input"
+                placeholder={placeholder}
                 onChange={handleChange}
                 required
-                style={{
-                  borderRadius: "10px",
-                  border: "1px solid var(--border)",
-                  background: "var(--bg)",
-                  padding: "10px 12px",
-                }}
               />
             </div>
           ))}
 
-          <div className="mb-4">
-            <label
-              className="form-label"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Аватар
+          <div className="auth-field">
+            <label className="auth-label">Аватар (необов'язково)</label>
+            <label className="auth-file-label" htmlFor="avatar-upload">
+              <ImagePlus size={16} />
+              <span>{avatarName || "Вибрати фото..."}</span>
             </label>
-
             <input
+              id="avatar-upload"
               type="file"
-              className="form-control"
+              className="auth-file-input"
+              accept="image/*"
               onChange={handleChange}
-              style={{
-                borderRadius: "10px",
-                border: "1px dashed var(--accent-soft)",
-                background: "var(--bg)",
-                padding: "8px 12px",
-                cursor: "pointer",
-              }}
             />
           </div>
 
           <button
             type="submit"
-            className="btn w-100"
+            className="auth-submit-btn"
             disabled={loading}
-            style={{
-              background: "linear-gradient(135deg, #FEB702, #F5811F)",
-              color: "#fff",
-              fontWeight: 600,
-              borderRadius: "14px",
-              padding: "11px",
-              border: "none",
-              boxShadow: "0 8px 20px rgba(245, 129, 31, 0.35)",
-              transition: "0.2s ease",
-              opacity: loading ? 0.7 : 1,
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-            onMouseEnter={(e) => !loading && (e.currentTarget.style.transform = "translateY(-1px)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
           >
-            {loading ? "Завантаження..." : "Зареєструватися"}
+            {loading ? "Реєстрація..." : "Зареєструватися"}
           </button>
         </form>
+
+        <p className="auth-footer">
+          Вже маєте акаунт?
+          <Link to="/login">Увійти</Link>
+        </p>
       </div>
     </div>
   );

@@ -1,66 +1,54 @@
 import { useState, useEffect, useContext } from "react";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
+import { UserPlus } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-const inputStyle = {
-  width: "100%",
-  padding: "9px 12px",
-  borderRadius: "var(--radius-sm)",
-  border: "1.5px solid var(--border)",
-  color: "var(--text-primary)",
-  fontSize: "0.88rem",
-  outline: "none",
-  transition: "var(--transition)",
-};
 
 export default function NewFriend({ onClose }) {
   const { friendships, friendRequests, addFriend, findFriend, searchResults } =
     useContext(FriendsContext);
   const { user } = useContext(AuthContext);
-
   const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    findFriend(query);
-  }, [query]);
+  useEffect(() => { findFriend(query); }, [query, findFriend]);
 
-  function handleAdd(user) {
-    addFriend(user._id);
+  function handleAdd(u) {
+    addFriend(u._id);
     onClose();
   }
 
   const filteredUsers = searchResults.filter(
-    (u) => 
-      // Не показувати себе
+    (u) =>
       u._id !== user._id &&
-      // Не показувати вже існуючих друзів
       !friendships.some((f) => f.users.some((fu) => fu._id === u._id)) &&
-      // Не показувати тих, хто надіслав запит нам
       !friendRequests.some((r) => r.requester?._id === u._id)
   );
 
   return (
-    <div style={{ width: "100%" }}>
-      <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>
-        Додати друга
-      </h2>
+    <div>
+      <div className="modal-header">
+        <h2>Додати друга</h2>
+        <p>Знайди користувача за іменем або нікнеймом</p>
+      </div>
 
-      <input
-        type="text"
-        placeholder="Пошук користувача..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={inputStyle}
-        autoFocus
-      />
+      <div className="modal-form-group">
+        <label className="modal-label">Пошук</label>
+        <input
+          type="text"
+          className="modal-input"
+          placeholder="Ім'я або @нікнейм..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          autoFocus
+        />
+      </div>
 
-      <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}>
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
         {filteredUsers.length > 0 ? (
-          filteredUsers.map((user) => (
+          filteredUsers.map((u) => (
             <li
-              key={user._id}
+              key={u._id}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -70,60 +58,39 @@ export default function NewFriend({ onClose }) {
               }}
             >
               <img
-                src={user.avatar
-                  ? `${API_URL}/uploads/${user.avatar}`
+                src={u.avatar
+                  ? `${API_URL}/uploads/${u.avatar}`
                   : `${API_URL}/uploads/default-avatar.png`}
-                alt={user.username}
-                style={{ width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }}
+                alt={u.username}
+                style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)", flexShrink: 0 }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                  {user.fullName || user.username}
+                <div style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                  {u.fullName || u.username}
                 </div>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  @{user.username}
+                  @{u.username}
                 </div>
               </div>
               <button
-                onClick={() => handleAdd(user)}
-                style={{
-                  border: "none",
-                  background: "var(--accent-strong)",
-                  color: "#fff",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "5px 12px",
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "var(--transition)",
-                  flexShrink: 0,
-                }}
+                className="modal-btn modal-btn-primary"
+                style={{ height: "32px", padding: "0 14px", fontSize: "0.8rem" }}
+                onClick={() => handleAdd(u)}
               >
-                + Додати
+                <UserPlus size={14} />
+                Додати
               </button>
             </li>
           ))
         ) : query ? (
-          <li style={{ fontSize: "0.85rem", color: "var(--text-muted)", padding: "12px 0", textAlign: "center" }}>
+          <li style={{ fontSize: "0.85rem", color: "var(--text-muted)", padding: "16px 0", textAlign: "center" }}>
             Нічого не знайдено
           </li>
         ) : null}
       </ul>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
-        <button
-          onClick={onClose}
-          style={{
-            border: "1.5px solid var(--border)",
-            color: "var(--text-muted)",
-            borderRadius: "var(--radius-sm)",
-            padding: "6px 16px",
-            fontSize: "0.82rem",
-            fontWeight: 600,
-            cursor: "pointer",
-            transition: "var(--transition)",
-          }}
-        >
+      <div className="modal-footer">
+        <button className="modal-btn modal-btn-secondary" onClick={onClose}>
           Скасувати
         </button>
       </div>

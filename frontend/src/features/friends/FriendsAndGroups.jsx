@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import Modal from "../../components/Modal/Modal";
+import Button from "../../components/Button/Button";
 import NewFriend from "./NewFriend";
 import NewGroup from "./NewGroup";
 import "./FriendsAndGroups.css";
@@ -76,20 +77,22 @@ export default function FriendsAndGroups() {
                       {req.requester?.fullName || req.requester?.username}
                     </div>
                     <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
-                      <button 
-                        className="action-button" 
-                        style={{ padding: "4px 8px", fontSize: "0.75rem", background: "var(--accent)", color: "white" }}
+                      <Button 
+                        variant="primary" 
+                        size="sm"
                         onClick={() => acceptFriendRequest(req.requester._id)}
+                        style={{ padding: '6px 12px' }}
                       >
                         Прийняти
-                      </button>
-                      <button 
-                        className="action-button" 
-                        style={{ padding: "4px 8px", fontSize: "0.75rem", background: "var(--bg-light)", border: "1px solid var(--border)" }}
+                      </Button>
+                      <Button 
+                        variant="secondary" 
+                        size="sm"
                         onClick={() => declineFriendRequest(req.requester._id)}
+                        style={{ padding: '6px 12px' }}
                       >
                         Відхилити
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -104,7 +107,10 @@ export default function FriendsAndGroups() {
       <div>
         <div className="friends-header">
           <h2>Друзі</h2>
-          <button className="action-button" onClick={() => setIsFriendModalOpen(true)}>
+          <button 
+            className="action-button"
+            onClick={() => setIsFriendModalOpen(true)}
+          >
             + Додати
           </button>
           <Modal isOpen={isFriendModalOpen} onClose={() => setIsFriendModalOpen(false)}>
@@ -151,7 +157,10 @@ export default function FriendsAndGroups() {
       <div>
         <div className="friends-header">
           <h2>Групи</h2>
-          <button className="action-button" onClick={() => setIsGroupModalOpen(true)}>
+          <button 
+            className="action-button"
+            onClick={() => setIsGroupModalOpen(true)}
+          >
             + Створити
           </button>
           <Modal isOpen={isGroupModalOpen} onClose={() => setIsGroupModalOpen(false)}>

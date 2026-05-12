@@ -20,6 +20,7 @@ function App() {
       <FriendsProvider>
         <MemoriesProvider>
           <Header />
+          <div className="app-body">
           <Routes>
             <Route
               path="/"
@@ -68,6 +69,7 @@ function App() {
               }
             />
           </Routes>
+          </div>
         </MemoriesProvider>
       </FriendsProvider>
     </AuthProvider>

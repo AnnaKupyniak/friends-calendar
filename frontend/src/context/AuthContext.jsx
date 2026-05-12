@@ -1,9 +1,7 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
-import { setAuthContextRef } from "../api/axiosConfig";
+import { apiClient, setAuthContextRef } from "../api/axiosConfig";
 
 export const AuthContext = createContext();
-const API_URL = import.meta.env.VITE_API_URL;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -12,11 +10,10 @@ export function AuthProvider({ children }) {
 
   async function register(data) {
     try {
-      await axios.post(`${API_URL}/api/auth/register/`, data, {
+      await apiClient.post("/api/auth/register/", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
       });
 
       await getMe();
@@ -29,9 +26,7 @@ export function AuthProvider({ children }) {
   async function login(data) {
     try {
       setError(null);
-      await axios.post(`${API_URL}/api/auth/login`, data, {
-        withCredentials: true,
-      });
+      await apiClient.post("/api/auth/login", data);
       await getMe();
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Login failed';
@@ -44,11 +39,7 @@ export function AuthProvider({ children }) {
   async function logout() {
     try {
       setError(null);
-      await axios.post(
-        `${API_URL}/api/auth/logout`,
-        {},
-        { withCredentials: true },
-      );
+      await apiClient.post("/api/auth/logout", {});
       localStorage.removeItem("selectedEntity");
       setUser(null);
     } catch (err) {
@@ -62,9 +53,7 @@ export function AuthProvider({ children }) {
   async function deleteUser() {
     try {
       setError(null);
-      await axios.delete(`${API_URL}/api/auth/delete`, {
-        withCredentials: true,
-      });
+      await apiClient.delete("/api/auth/delete");
       setUser(null);
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Delete failed';
@@ -74,13 +63,14 @@ export function AuthProvider({ children }) {
 
   async function getMe() {
     try {
-      const res = await axios.get(`${API_URL}/api/auth/me`, {
-        withCredentials: true,
-      });
+      const res = await apiClient.get("/api/auth/me");
       setUser(res.data.data);
     } catch (err) {
       setUser(null);
-      console.log(err.response?.data || err.message);
+      // 401 is expected when not logged in — don't log as error
+      if (err.response?.status !== 401) {
+        console.log(err.response?.data || err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -89,9 +79,7 @@ export function AuthProvider({ children }) {
   async function updateDetails(data) {
     try {
       setError(null);
-      const res = await axios.put(`${API_URL}/api/auth/updatedetails`, data, {
-        withCredentials: true,
-      });
+      const res = await apiClient.put("/api/auth/updatedetails", data);
       if (res.data.success) {
         setUser(res.data.data);
       }
@@ -105,9 +93,7 @@ export function AuthProvider({ children }) {
   async function updatePassword(data) {
     try {
       setError(null);
-      await axios.put(`${API_URL}/api/auth/updatepassword`, data, {
-        withCredentials: true,
-      });
+      await apiClient.put("/api/auth/updatepassword", data);
       await getMe();
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Password update failed';
