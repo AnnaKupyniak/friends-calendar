@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Folder } from "lucide-react";
 import "./Categories.css";
 
 export default function Categories({
@@ -62,7 +63,8 @@ export default function Categories({
               className={`category-btn${isActive ? " active" : ""}`}
               onClick={() => onSelectCategory(cat)}
             >
-              {cat.name}
+              <Folder size={14} className="cat-icon" />
+              <span>{cat.name}</span>
             </button>
           );
         })}

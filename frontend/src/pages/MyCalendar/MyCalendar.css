@@ -13,8 +13,8 @@
 
 .mycal-page {
   min-height: 100vh;
-  background-color: #F6F4FA;
-  padding: 40px;
+  background-color: var(--bg);
+  padding: 40px 40px;
   font-family: 'Manrope', sans-serif;
   color: var(--text);
 }
@@ -149,12 +149,11 @@
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   position: sticky;
-  top: 40px;
+  top: calc(var(--header-height) + 24px);
 }
 
 /* Legend & Clear */
 .mycal-legend {
-  margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
   display: flex;
@@ -205,7 +204,6 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 24px;
   padding: 0 8px;
 }
 
@@ -274,17 +272,17 @@
 }
 
 .mycal-datecalendar .MuiPickersCalendarHeader-label {
-    font-family: 'Manrope', sans-serif !important;
-    font-weight: 700 !important;
-    color: var(--text) !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--text) !important;
 }
 
 .mycal-datecalendar .MuiDayCalendar-header span {
-    font-family: 'Manrope', sans-serif !important;
-    font-weight: 700 !important;
-    color: var(--text-light) !important;
-    text-transform: uppercase;
-    font-size: 0.7rem !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--text-light) !important;
+  text-transform: uppercase;
+  font-size: 0.7rem !important;
 }
 
 .mycal-day-wrapper {
@@ -297,36 +295,33 @@
   justify-content: center;
 }
 
-.mycal-day-wrapper.has-memory {
-  background: rgba(245, 129, 31, 0.05);
-  border-radius: 12px;
+/* ── Heatmap UI ── */
+.mycal-day-wrapper.intensity-1 {
+  background: linear-gradient(135deg, rgba(89, 46, 131, 0.05), rgba(89, 46, 131, 0.12));
+  border-radius: 14px;
+}
+
+.mycal-day-wrapper.intensity-2 {
+  background: linear-gradient(135deg, rgba(89, 46, 131, 0.15), rgba(89, 46, 131, 0.3));
+  border-radius: 14px;
+}
+
+.mycal-day-wrapper.intensity-3 {
+  background: linear-gradient(135deg, var(--accent-strong), #3d1a5c);
+  border-radius: 14px;
 }
 
 .mycal-day-wrapper.selected {
-  background: var(--primary) !important;
-  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-strong), #3d1a5c) !important;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(89, 46, 131, 0.35);
+  transform: scale(1.05);
+  z-index: 2;
 }
 
-.mycal-dot-row {
-  position: absolute;
-  bottom: 4px;
-  display: flex;
-  gap: 2px;
-  justify-content: center;
-}
-
-.mycal-dot {
-  width: 4px;
-  height: 4px;
-  background: var(--accent);
-  border-radius: 50%;
-}
-
-.mycal-dot-more {
-  font-size: 8px;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 4px;
+.mycal-datecalendar .MuiPickersDay-root {
+  background: transparent !important;
+  color: inherit;
 }
 
 @media (max-width: 1100px) {
@@ -336,6 +331,13 @@
 }
 
 @media (max-width: 768px) {
-  .mycal-stats-container { grid-template-columns: 1fr; }
-  .mycal-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .mycal-stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .mycal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
 }

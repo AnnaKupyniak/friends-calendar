@@ -1,29 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
-:root {
-  --accent: #F5811F;
-  --accent-soft: #CAA8F5;
-  --accent-strong: #592E83;
-
-  --surface: #FFFFFF;
-  --border: #E9DDF8;
-
-  --danger: #D94F30;
-
-  --text-primary: #2D1B3D;
-  --text-muted: #6E5A85;
-  --text-light: #9B8FB5;
-
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-
-  --shadow-sm: 0 2px 8px rgba(89, 46, 131, 0.06);
-  --shadow-md: 0 6px 24px rgba(89, 46, 131, 0.12);
-  --shadow-lg: 0 12px 32px rgba(89, 46, 131, 0.15);
-
-  --transition: 0.18s ease;
-}
+/* ─── Impeccable Variables are inherited from index.css ─── */
+/* ─── Removed local :root to prevent global leaks ─── */
 
 /* ─── Base ─────────────────────────────────────────── */
 * {
@@ -32,11 +10,7 @@
   padding: 0;
 }
 
-body {
-  font-family: 'Manrope', sans-serif;
-  background: #F6F4FA;
-  color: var(--text-primary);
-}
+
 
 .loading {
   display: flex;
@@ -51,14 +25,12 @@ body {
 /* ─── Profile Page ──────────────────────────────────── */
 .profile-page {
   min-height: 100vh;
-  background: #F6F4FA;
 }
 
 /* ─── Hero Section ──────────────────────────────────── */
 .profile-hero {
   position: relative;
   padding: clamp(3rem, 8vh, 5rem) var(--space-lg);
-  background: var(--surface);
   overflow: hidden;
   border-bottom: 1px solid var(--border);
 }
@@ -70,7 +42,6 @@ body {
   right: -20%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(202, 168, 245, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -169,7 +140,7 @@ body {
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  overflow: hidden; 
+  overflow: hidden;
   border: 1px solid var(--border);
   position: sticky;
   top: 24px;
@@ -284,7 +255,7 @@ body {
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  overflow: hidden; 
+  overflow: hidden;
   border: 1px solid var(--border);
   position: sticky;
   top: 24px;
@@ -681,7 +652,8 @@ body {
   margin-top: 20px;
 }
 
-.cancel-btn, .save-btn {
+.cancel-btn,
+.save-btn {
   font-family: 'Manrope', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;

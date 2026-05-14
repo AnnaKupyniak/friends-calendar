@@ -64,29 +64,34 @@
   margin: 2px;
 }
 
-.mycal-day-wrapper.selected {
-  background: var(--accent) !important;
+/* ── Heatmap UI ── */
+.mycal-day-wrapper.intensity-1 {
+  background: linear-gradient(135deg, rgba(89, 46, 131, 0.05), rgba(89, 46, 131, 0.12));
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(245, 129, 31, 0.3);
 }
 
-.mycal-dot-row {
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  position: absolute;
-  bottom: 4px;
+.mycal-day-wrapper.intensity-2 {
+  background: linear-gradient(135deg, rgba(89, 46, 131, 0.15), rgba(89, 46, 131, 0.3));
+  border-radius: 12px;
 }
 
-.mycal-dot {
-  width: 4px;
-  height: 4px;
-  background: var(--accent);
-  border-radius: 50%;
+.mycal-day-wrapper.intensity-3 {
+  background: linear-gradient(135deg, var(--accent-strong), #3d1a5c);
+  border-radius: 12px;
 }
 
-.mycal-day-wrapper.selected .mycal-dot {
-  background: #fff;
+.mycal-day-wrapper.selected {
+  background: linear-gradient(135deg, var(--accent-strong), #3d1a5c) !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(89, 46, 131, 0.35);
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+/* Прибираємо стандартний фон MUI, щоб працював наш wrapper */
+.MuiPickersDay-root {
+  background: transparent !important;
+  color: inherit;
 }
 
 /* Кнопка "Показати всі" */

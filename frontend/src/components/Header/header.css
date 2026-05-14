@@ -2,12 +2,6 @@
   padding: clamp(0.75rem, 2vh, 1rem) var(--space-lg);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 1000;
   box-shadow: 0 1px 0 var(--border);
 }
 
@@ -155,8 +149,13 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 850px) {
@@ -175,7 +174,7 @@
     padding: 80px 40px;
     transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1050;
-    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
     gap: var(--space-md);
     align-items: flex-start;
   }
@@ -195,10 +194,11 @@
     display: none;
   }
 
-  .primary-btn, .logout-btn {
+  .primary-btn,
+  .logout-btn {
     width: 100%;
     margin-top: var(--space-md);
     padding: 14px;
     font-size: 1rem;
   }
-}
+}

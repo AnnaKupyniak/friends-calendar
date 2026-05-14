@@ -120,8 +120,7 @@ export default function Memories({ category }) {
   };
 
   return (
-    <div className="memories-container">
-      {/* ── Хедер: ім'я + дії ── */}
+    <>
       <div className="memories-header">
         <div className="header-title-box">
           {selectedEntity?.type === "group" && (
@@ -141,9 +140,6 @@ export default function Memories({ category }) {
               {selectedEntity?.type === "friend" && getFriendName()}
               {selectedEntity?.type === "group" && selectedEntity.data.name}
             </h1>
-            <span className="header-entity-type">
-              {selectedEntity?.type === "friend" ? "Друг" : "Група"}
-            </span>
           </div>
         </div>
 
@@ -235,118 +231,118 @@ export default function Memories({ category }) {
           </div>
         </div>
       </div>
-
-      {/* ── Тулбар: пошук + додати ── */}
-      <div className="memories-toolbar">
-        <div className="toolbar-search">
-          <MemoriesSearch />
-        </div>
-        <button
-          className="mem-add-btn"
-          onClick={() => setModalIsOpen(true)}
-        >
-          <Plus size={15} />
-          Додати спогад
-        </button>
-      </div>
-
-      {filteredMemories.length > 0 ? (
-        <div className={`memories-${viewMode}`}>
-          {filteredMemories.map((memory) => (
-            <MemoryCard key={memory._id} memory={memory} />
-          ))}
-        </div>
-      ) : (
-        <div className="no-memories">
-          <ImageOff size={44} strokeWidth={1.2} className="no-memories-icon" />
-          <p>Немає спогадів для відображення</p>
+      <div className="memories-container">
+        <div className="memories-toolbar">
+          <div className="toolbar-search">
+            <MemoriesSearch />
+          </div>
           <button
-            className="no-memories-cta"
+            className="mem-add-btn"
             onClick={() => setModalIsOpen(true)}
           >
             <Plus size={15} />
-            Створити перший спогад
+            Додати спогад
           </button>
         </div>
-      )}
 
-      <Modal isOpen={isModalOpen} onClose={() => setModalIsOpen(false)}>
-        <CreateMemory onClose={() => setModalIsOpen(false)} />
-      </Modal>
-
-      <Modal
-        isOpen={isAddFriendModalOpen}
-        onClose={() => setIsAddFriendModalOpen(false)}
-      >
-        <AddMember onClose={() => setIsAddFriendModalOpen(false)} />
-      </Modal>
-
-      <Modal
-        isOpen={isEditGroupModalOpen}
-        onClose={() => setIsEditGroupModalOpen(false)}
-      >
-        <div className="edit-profile-modal-content">
-          <h2>Редагувати групу</h2>
-          <form onSubmit={handleEditGroupSubmit}>
-            <div
-              className="profile-avatar-section"
-              style={{ marginBottom: "24px" }}
+        {filteredMemories.length > 0 ? (
+          <div className={`memories-${viewMode}`}>
+            {filteredMemories.map((memory) => (
+              <MemoryCard key={memory._id} memory={memory} />
+            ))}
+          </div>
+        ) : (
+          <div className="no-memories">
+            <ImageOff size={44} strokeWidth={1.2} className="no-memories-icon" />
+            <p>Немає спогадів для відображення</p>
+            <button
+              className="no-memories-cta"
+              onClick={() => setModalIsOpen(true)}
             >
-              <div className="profile-avatar-container">
-                <img
-                  src={
-                    avatarPreview ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(editGroupForm.name)}&background=random`
-                  }
-                  alt="Avatar"
-                  className="profile-avatar"
-                  style={{ width: "120px", height: "120px" }}
-                />
-                <label htmlFor="group-avatar-upload" className="avatar-edit-badge">
-                  <i className="fas fa-camera"></i>
-                </label>
+              <Plus size={15} />
+              Створити перший спогад
+            </button>
+          </div>
+        )}
+
+        <Modal isOpen={isModalOpen} onClose={() => setModalIsOpen(false)}>
+          <CreateMemory onClose={() => setModalIsOpen(false)} />
+        </Modal>
+
+        <Modal
+          isOpen={isAddFriendModalOpen}
+          onClose={() => setIsAddFriendModalOpen(false)}
+        >
+          <AddMember onClose={() => setIsAddFriendModalOpen(false)} />
+        </Modal>
+
+        <Modal
+          isOpen={isEditGroupModalOpen}
+          onClose={() => setIsEditGroupModalOpen(false)}
+        >
+          <div className="edit-profile-modal-content">
+            <h2>Редагувати групу</h2>
+            <form onSubmit={handleEditGroupSubmit}>
+              <div
+                className="profile-avatar-section"
+                style={{ marginBottom: "24px" }}
+              >
+                <div className="profile-avatar-container">
+                  <img
+                    src={
+                      avatarPreview ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(editGroupForm.name)}&background=random`
+                    }
+                    alt="Avatar"
+                    className="profile-avatar"
+                    style={{ width: "120px", height: "120px" }}
+                  />
+                  <label htmlFor="group-avatar-upload" className="avatar-edit-badge">
+                    <i className="fas fa-camera"></i>
+                  </label>
+                  <input
+                    type="file"
+                    id="group-avatar-upload"
+                    hidden
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="groupName">Назва групи</label>
                 <input
-                  type="file"
-                  id="group-avatar-upload"
-                  hidden
-                  accept="image/*"
-                  onChange={handleAvatarChange}
+                  type="text"
+                  id="groupName"
+                  className="modal-input"
+                  value={editGroupForm.name}
+                  onChange={(e) =>
+                    setEditGroupForm({ ...editGroupForm, name: e.target.value })
+                  }
+                  required
                 />
               </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="groupName">Назва групи</label>
-              <input
-                type="text"
-                id="groupName"
-                className="modal-input"
-                value={editGroupForm.name}
-                onChange={(e) =>
-                  setEditGroupForm({ ...editGroupForm, name: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div className="modal-buttons">
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => setIsEditGroupModalOpen(false)}
-              >
-                Скасувати
-              </Button>
-              <Button 
-                variant="primary"
-                size="md"
-                type="submit"
-              >
-                Зберегти
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-    </div>
+              <div className="modal-buttons">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => setIsEditGroupModalOpen(false)}
+                >
+                  Скасувати
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
+                  type="submit"
+                >
+                  Зберегти
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Modal>
+      </div>
+    </>
   );
 }

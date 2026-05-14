@@ -1,9 +1,9 @@
-import { useContext, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useEffect, useCallback, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { useState, useRef } from "react";
+import { FriendsContext } from "../../context/FriendsContext";
 import FriendsAndGroups from "../../features/friends/FriendsAndGroups";
-import { MessageCircle, MailOpen } from "lucide-react";
+import { MessageCircle, MailOpen, ArrowLeft } from "lucide-react";
 import "./Chat.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -16,10 +16,17 @@ function formatTime(dateStr) {
 
 export default function Chat() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { friendships = [] } = useContext(FriendsContext);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const messagesEndRef = useRef(null);
+
+  // Знаходимо співрозмовника серед друзів
+  const chatPartner = friendships
+    .flatMap((f) => f.users)
+    .find((u) => u._id === id);
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,11 +80,22 @@ export default function Chat() {
       {/* Chat */}
       <div className="chat-wrapper">
         <div className="chat-header">
+          <button className="chat-back-btn" onClick={() => navigate(-1)} aria-label="Назад">
+            <ArrowLeft size={20} />
+          </button>
           <div className="chat-header-avatar">
-            <MessageCircle size={20} />
+            {chatPartner?.avatar ? (
+              <img
+                src={`${API_URL}/uploads/${chatPartner.avatar}`}
+                alt="avatar"
+                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
+              />
+            ) : (
+              <MessageCircle size={20} />
+            )}
           </div>
           <div className="chat-header-info">
-            <h2>Чат</h2>
+            <h2>{chatPartner ? chatPartner.fullName || chatPartner.username : "Чат"}</h2>
             <span>онлайн</span>
           </div>
         </div>

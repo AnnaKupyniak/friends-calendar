@@ -60,7 +60,7 @@ export default function FriendsAndGroups() {
       {friendRequests.length > 0 && (
         <div style={{ marginBottom: "20px" }}>
           <div className="friends-header">
-            <h2 style={{ color: "var(--accent)" }}>Запити ({friendRequests.length})</h2>
+            <h2 style={{ color: "var(--accent-strong)" }}>Запити ({friendRequests.length})</h2>
           </div>
           <ul className="list-unstyled">
             {friendRequests.map((req) => (
@@ -193,8 +193,7 @@ export default function FriendsAndGroups() {
                         width: "40px",
                         height: "40px",
                         borderRadius: "50%",
-                        objectFit: "cover",
-                        border: isActive ? "2px solid var(--accent)" : "2px solid var(--border)",
+                        border: isActive ? "2px solid var(--accent-strong)" : "2px solid var(--border)",
                         flexShrink: 0
                       }}
                     />

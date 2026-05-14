@@ -7,11 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
-    position: sticky;
-    top: calc(var(--header-height) + 1rem);
-    z-index: 100;
 }
 
 .header-title-box {
@@ -22,6 +18,7 @@
     min-width: 0;
 }
 
+
 .group-header-avatar {
     width: 44px;
     height: 44px;
@@ -31,17 +28,17 @@
     flex-shrink: 0;
 }
 
-.group-header-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .header-title-text {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+}
+
+.group-header-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .memories-header h1 {
@@ -72,12 +69,23 @@
     flex-shrink: 0;
 }
 
+/* ── Контейнер (toolbar + memories) ── */
+.memories-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
 /* ── Тулбар (search + add) ── */
 .memories-toolbar {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    box-shadow: var(--shadow-sm);
 }
 
 .toolbar-search {
@@ -89,6 +97,7 @@
 .mem-icon-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 0 12px;
     height: 36px;
@@ -102,6 +111,7 @@
     cursor: pointer;
     transition: var(--transition);
     white-space: nowrap;
+    line-height: 1;
 }
 
 .mem-icon-btn:hover {
@@ -118,6 +128,7 @@
 .mem-view-btn {
     padding: 0;
     width: 36px;
+    justify-content: center;
 }
 
 /* Primary add button */
@@ -254,31 +265,37 @@
     .memories-list {
         grid-template-columns: 1fr;
         max-width: 100%;
+        gap: var(--space-md);
+        padding: var(--space-md) 0;
     }
 
     .memories-header {
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 15px;
-        align-items: stretch;
-    }
-
-    .header-search-wrapper {
-        margin: 10px 0;
-        max-width: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 1rem 1.25rem;
+        gap: 10px;
+        align-items: center;
+        position: static;
     }
 
     .header-controls {
-        display: grid;
-        grid-template-columns: 1fr 1fr auto auto;
-        gap: 8px;
+        display: flex;
         align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
     }
 
-    .header-controls .btn {
-        font-size: 0.65rem;
-        padding: 8px 5px;
-        width: 100%;
+    .memories-header h1 {
+        font-size: 1rem;
+    }
+
+    .memories-toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .mem-add-btn span {
+        display: none;
     }
 }
 

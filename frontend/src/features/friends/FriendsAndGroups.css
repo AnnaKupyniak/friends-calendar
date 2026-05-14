@@ -43,9 +43,9 @@
 }
 
 .action-button:hover {
-  background: var(--accent-light);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--accent-strong-soft);
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
 }
 
 
@@ -62,7 +62,8 @@
   color: var(--text-primary);
   cursor: pointer;
   border-radius: var(--radius-md);
-  transition: var(--transition);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .friend-button img {
@@ -84,23 +85,39 @@
 
 .friend-button:hover {
   background: rgba(89, 46, 131, 0.04);
+  transform: translateY(-1px);
 }
 
 .active-item {
-  background: var(--accent-light) !important;
-  color: var(--accent) !important;
+  background: rgba(89, 46, 131, 0.06) !important;
+}
+
+.active-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 3px;
+  background: var(--accent-strong);
+  border-radius: 0 4px 4px 0;
 }
 
 .active-item span {
-  color: var(--accent);
+  color: var(--accent-strong);
+  font-weight: 700;
 }
 
 .active-item img {
-  border-color: var(--accent) !important;
+  border-color: var(--accent-strong) !important;
 }
 
 .friends-list>div+div {
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
+}
+
+ul {
+  list-style: none;
 }

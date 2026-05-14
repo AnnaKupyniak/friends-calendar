@@ -4,6 +4,7 @@ import FriendsAndGroups from "../../features/friends/FriendsAndGroups";
 import Memories from "../../features/memories/Memories";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { useContext } from "react";
+import { MessageSquare } from "lucide-react";
 import './Home.css';
 
 export default function Home() {
@@ -41,7 +42,13 @@ export default function Home() {
 
       <div className="home-main">
         {!selectedEntity && (
-          <div className="placeholder-message">Оберіть друга або групу зліва</div>
+          <div className="placeholder-message">
+            <div className="placeholder-icon">
+              <MessageSquare size={48} strokeWidth={1.5} />
+            </div>
+            <h2>Немає активного чату</h2>
+            <p>Оберіть друга або групу зліва, щоб переглянути спогади та почати спілкування.</p>
+          </div>
         )}
         
         {selectedEntity && (

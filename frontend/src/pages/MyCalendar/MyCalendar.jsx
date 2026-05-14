@@ -169,8 +169,10 @@ export default function MyCalendar() {
                       const isSelected = selectedDate && day.isSame(selectedDate, "day");
                       const count = hasMemory ? myMemories.filter(m => dayjs(m.date).format("YYYY-MM-DD") === dateStr).length : 0;
 
+                      const intensityLevel = count > 3 ? 3 : count;
+
                       return (
-                        <div className={"mycal-day-wrapper " + (hasMemory ? "has-memory " : "") + (isSelected ? "selected " : "") + (outsideCurrentMonth ? "outside" : "")}>
+                        <div className={`mycal-day-wrapper ${hasMemory ? `has-memory intensity-${intensityLevel} ` : ""} ${isSelected ? "selected " : ""} ${outsideCurrentMonth ? "outside" : ""}`}>
                           <PickersDay
                             {...other}
                             day={day}
@@ -182,17 +184,11 @@ export default function MyCalendar() {
                               fontSize: "0.95rem",
                               fontWeight: hasMemory ? 700 : 400,
                               background: "transparent !important",
-                              color: outsideCurrentMonth ? "rgba(110,90,133,0.3) !important" : isSelected ? "#fff !important" : hasMemory ? "#F5811F !important" : "inherit",
-                              "&:hover": { background: "rgba(245,129,31,0.1) !important" },
+                              color: outsideCurrentMonth ? "rgba(110,90,133,0.3) !important" : (isSelected || count >= 3) ? "#fff !important" : "inherit",
+                              "&:hover": { background: "rgba(89, 46, 131, 0.08) !important" },
                               "&.Mui-selected": { background: "transparent !important" },
                             }}
                           />
-                          {hasMemory && (
-                            <div className="mycal-dot-row">
-                              {Array.from({ length: Math.min(count, 3) }).map((_, i) => <span key={i} className="mycal-dot" />)}
-                              {count > 3 && <span className="mycal-dot-more">+</span>}
-                            </div>
-                          )}
                         </div>
                       );
                     },

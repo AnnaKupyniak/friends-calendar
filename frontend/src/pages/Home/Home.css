@@ -15,7 +15,6 @@ body {
   min-height: calc(100vh - 72px);
   max-width: 1600px;
   margin: 0 auto;
-  background-color: #F6F4FA;
 }
 
 .home-sidebar {
@@ -33,12 +32,8 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  padding: var(--space-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  gap: var(--space-md);
   min-height: 600px;
-  border: 1px solid var(--border);
 }
 
 .home-right-panel {
@@ -64,14 +59,42 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  font-weight: 500;
   text-align: center;
-  padding: var(--space-2xl);
-  background: var(--accent-light);
-  border-radius: var(--radius-md);
+  padding: 40px;
+  background: var(--surface);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
   margin: auto;
+  gap: 16px;
+  max-width: 500px;
+  box-shadow: var(--shadow-sm);
+}
+
+.placeholder-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.placeholder-message h2 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.placeholder-message p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
 }
 
 .home-main h2 {
@@ -84,7 +107,6 @@ body {
   background: var(--accent-soft);
   border-radius: 100px;
   padding: 5px 16px;
-  margin: 0 0 22px;
   letter-spacing: 0.03em;
 }
 
@@ -140,9 +162,5 @@ body {
 @media (max-width: 768px) {
   .home-container {
     padding: 16px;
-  }
-
-  .home-main {
-    padding: 20px;
   }
 }

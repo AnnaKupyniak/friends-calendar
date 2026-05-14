@@ -41,27 +41,26 @@ const { friendships, groups } = useContext(FriendsContext);
       setSelectedDate(newValue ? newValue.format("YYYY-MM-DD") : null);
     }
   };
-const checkHasMemory = useCallback((day) => {
-  if (!memories || !entity || !currentId) return false;
+const getMemoryCount = useCallback((day) => {
+  if (!memories || !entity || !currentId) return 0;
   
   const dayStr = day.format('YYYY-MM-DD');
 
-  return memories.some((m) => {
+  return memories.filter((m) => {
     const memoryDate = dayjs(m.date).format('YYYY-MM-DD');
     if (memoryDate !== dayStr) return false;
 
     // РЕЖИМ ПРОФІЛЮ (currentUser передано)
-    // Показуємо ВСІ спогади, де користувач є учасником (як автор або як частина сутності)
     if (currentUser) {
       return (
-        String(m.createdBy) === String(currentId) || // Створено мною
-        String(m.entity) === String(currentId) ||    // Стосується мене (User)
-        friendships.some(f => String(f._id) === String(m.entity)) || // Стосується моїх дружб
-        groups.some(g => String(g._id) === String(m.entity)) // Стосується моїх груп
+        String(m.createdBy) === String(currentId) || 
+        String(m.entity) === String(currentId) ||    
+        friendships.some(f => String(f._id) === String(m.entity)) || 
+        groups.some(g => String(g._id) === String(m.entity)) 
       );
     }
 
-    // РЕЖИМ HOME (працює як раніше - фільтр по конкретному обраному об'єкту)
+    // РЕЖИМ HOME
     if (entity.type === "friend") {
       return (
         (m.entityType === "Friendship" || m.entityType === "User") && 
@@ -73,7 +72,7 @@ const checkHasMemory = useCallback((day) => {
     }
 
     return false;
-  });
+  }).length;
 }, [memories, entity, currentId, currentUser, friendships, groups]);
 
   // Використовуємо slotProps для передачі функції перевірки в рендер дня
@@ -87,11 +86,15 @@ const checkHasMemory = useCallback((day) => {
           slots={{
             day: (props) => {
               const { day, outsideCurrentMonth, ...other } = props;
-              const hasMemory = !outsideCurrentMonth && checkHasMemory(day);
+              const count = !outsideCurrentMonth ? getMemoryCount(day) : 0;
+              const hasMemory = count > 0;
               const isSelected = value && day.isSame(value, "day");
+              
+              // Обмежуємо інтенсивність до 3 (1, 2, 3+)
+              const intensityLevel = count > 3 ? 3 : count;
 
               return (
-                <div className={"mycal-day-wrapper " + (hasMemory ? "has-memory " : "") + (isSelected ? "selected " : "") + (outsideCurrentMonth ? "outside" : "")}>
+                <div className={`mycal-day-wrapper ${hasMemory ? `has-memory intensity-${intensityLevel} ` : ""} ${isSelected ? "selected " : ""} ${outsideCurrentMonth ? "outside" : ""}`}>
                   <PickersDay
                     {...other}
                     day={day}
@@ -103,16 +106,11 @@ const checkHasMemory = useCallback((day) => {
                       fontSize: "0.85rem",
                       fontWeight: hasMemory ? 700 : 400,
                       background: "transparent !important",
-                      color: outsideCurrentMonth ? "rgba(110,90,133,0.3) !important" : isSelected ? "#fff !important" : hasMemory ? "#F5811F !important" : "inherit",
-                      "&:hover": { background: "rgba(245,129,31,0.1) !important" },
+                      color: outsideCurrentMonth ? "rgba(110,90,133,0.3) !important" : (isSelected || count >= 3) ? "#fff !important" : "inherit",
+                      "&:hover": { background: "rgba(89, 46, 131, 0.08) !important" },
                       "&.Mui-selected": { background: "transparent !important" },
                     }}
                   />
-                  {hasMemory && (
-                    <div className="mycal-dot-row">
-                      <span className="mycal-dot" />
-                    </div>
-                  )}
                 </div>
               );
             }
