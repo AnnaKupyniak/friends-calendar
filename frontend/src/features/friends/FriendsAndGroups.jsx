@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FriendsContext } from "../../context/FriendsContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import Modal from "../../components/Modal/Modal";
@@ -10,6 +11,8 @@ import "./FriendsAndGroups.css";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function FriendsAndGroups() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     friendships = [],
     friendRequests = [],
@@ -132,6 +135,9 @@ export default function FriendsAndGroups() {
                     onClick={() => {
                       setActiveItem({ type: "friend", id: friend._id });
                       onSelectFriend(friend);
+                      if (location.pathname.startsWith('/chat')) {
+                        navigate(`/chat/${friend._id}`);
+                      }
                     }}
                   >
                     <img
@@ -180,6 +186,9 @@ export default function FriendsAndGroups() {
                     onClick={() => {
                       setActiveItem({ type: "group", id: group._id?.toString() });
                       onSelectGroup(group);
+                      if (location.pathname.startsWith('/group')) {
+                        navigate(`/group/${group._id}`);
+                      }
                     }}
                   >
                     <img

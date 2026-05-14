@@ -25,20 +25,3 @@ exports.getMessages = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
-exports.postMessage = async (req, res) => {
-    try {
-        const { receiverId, text } = req.body;
-
-        if (!text || !receiverId) {
-            return res.status(400).json({ error: 'Text and receiverId are required' });
-        }
-        const message = new Message({ senderId: req.user._id, receiverId, text });
-
-        await message.save();
-
-        res.status(201).json(message);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Cannot send message' });
-    }
-}

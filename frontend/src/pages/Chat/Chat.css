@@ -17,9 +17,11 @@
 .chat-sidebar::-webkit-scrollbar {
   width: 4px;
 }
+
 .chat-sidebar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .chat-sidebar::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 99px;
@@ -48,7 +50,8 @@
 }
 
 .chat-back-btn {
-  display: none; /* Прихована на десктопі */
+  display: none;
+  /* Прихована на десктопі */
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -108,9 +111,11 @@
 .chat-messages::-webkit-scrollbar {
   width: 4px;
 }
+
 .chat-messages::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .chat-messages::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 99px;
@@ -129,6 +134,7 @@
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -336,9 +342,7 @@
   line-height: 1.5;
   margin: 0;
 }
-  font-style: italic;
-  margin: 0;
-}
+
 
 /* ─── Responsive ────────────────────────────────────── */
 @media (max-width: 680px) {
@@ -351,7 +355,8 @@
   }
 
   .chat-back-btn {
-    display: flex; /* Показуємо на мобільному */
+    display: flex;
+    /* Показуємо на мобільному */
   }
 
   .chat-header {

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useCallback, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import { AuthContext } from "../../context/AuthContext";
 import { FriendsContext } from "../../context/FriendsContext";
 import FriendsAndGroups from "../../features/friends/FriendsAndGroups";
@@ -22,7 +23,7 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const messagesEndRef = useRef(null);
-
+  const socket = useRef(null);
   // Знаходимо співрозмовника серед друзів
   const chatPartner = friendships
     .flatMap((f) => f.users)
@@ -45,30 +46,54 @@ export default function Chat() {
     }
   }, [id]);
 
+  // Socket connection + join chat room
+  useEffect(() => {
+    if (!socket.current) {
+      socket.current = io("http://localhost:5000", { reconnection: true });
+    }
+
+    // Join the new chat room
+    socket.current.emit("join-chat", {
+      userId: user._id,
+      chatPartnerId: id,
+    });
+
+    // Load old messages from database
+    fetchMessages();
+
+    // Listen for new messages
+    socket.current.on("new-message", (message) => {
+      setMessages((prev) => [...prev, message]);
+      scrollToBottom();
+    });
+
+    socket.current.on("user-online", (data) => {
+      console.log(`Користувач ${data.userId} онлайн`);
+    });
+
+    // Cleanup
+    return () => {
+      socket.current?.off("new-message");
+      socket.current?.off("user-online");
+    };
+  }, [user._id, id]);
+
+  // Disconnect when unmount
+  useEffect(() => {
+    return () => {
+      socket.current?.disconnect();
+    };
+  }, []);
+
   async function sendMessage() {
     if (!text.trim()) return;
-    try {
-      await fetch(`${API_URL}/api/messages`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ receiverId: id, text }),
-      });
-      setText("");
-      fetchMessages();
-    } catch (err) {
-      console.error(err);
-    }
+    socket.current.emit("send-message", {
+      senderId: user._id,
+      receiverId: id,
+      text,
+    });
+    setText("");
   }
-
-  useEffect(() => {
-    const loadMessages = async () => {
-      await fetchMessages();
-    };
-    loadMessages();
-    const interval = setInterval(fetchMessages, 3000);
-    return () => clearInterval(interval);
-  }, [fetchMessages]);
 
   return (
     <div className="chat-page">
@@ -80,7 +105,11 @@ export default function Chat() {
       {/* Chat */}
       <div className="chat-wrapper">
         <div className="chat-header">
-          <button className="chat-back-btn" onClick={() => navigate(-1)} aria-label="Назад">
+          <button
+            className="chat-back-btn"
+            onClick={() => navigate(-1)}
+            aria-label="Назад"
+          >
             <ArrowLeft size={20} />
           </button>
           <div className="chat-header-avatar">
@@ -88,14 +117,23 @@ export default function Chat() {
               <img
                 src={`${API_URL}/uploads/${chatPartner.avatar}`}
                 alt="avatar"
-                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
               />
             ) : (
               <MessageCircle size={20} />
             )}
           </div>
           <div className="chat-header-info">
-            <h2>{chatPartner ? chatPartner.fullName || chatPartner.username : "Чат"}</h2>
+            <h2>
+              {chatPartner
+                ? chatPartner.fullName || chatPartner.username
+                : "Чат"}
+            </h2>
             <span>онлайн</span>
           </div>
         </div>
@@ -118,7 +156,9 @@ export default function Chat() {
                 >
                   <div className="chat-bubble">{msg.text}</div>
                   {msg.createdAt && (
-                    <span className="chat-time">{formatTime(msg.createdAt)}</span>
+                    <span className="chat-time">
+                      {formatTime(msg.createdAt)}
+                    </span>
                   )}
                 </div>
               );
@@ -145,7 +185,14 @@ export default function Chat() {
             disabled={!text.trim()}
             aria-label="Надіслати"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
