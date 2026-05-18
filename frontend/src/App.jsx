@@ -13,63 +13,66 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Comments from "./pages/Comments/Comments.jsx";
 import Chat from "./pages/Chat/Chat.jsx";
 import MyCalendar from "./pages/MyCalendar/MyCalendar.jsx";
+import { EventsProvider } from "./context/EventsContext.jsx";
 
 function App() {
   return (
     <AuthProvider>
       <FriendsProvider>
         <MemoriesProvider>
-          <Header />
-          <div className="app-body">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
+          <EventsProvider>
+            <Header />
+            <div className="app-body">
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <Home />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-            <Route
-              path="/comments/:id"
-              element={
-                <ProtectedRoute>
-                  <Comments />
-                </ProtectedRoute>
-              }
-            />
+                <Route
+                  path="/comments/:id"
+                  element={
+                    <ProtectedRoute>
+                      <Comments />
+                    </ProtectedRoute>
+                  }
+                />
 
-            <Route
-              path="/chat/:id"
-              element={
-                <ProtectedRoute>
-                  <Chat />
-                </ProtectedRoute>
-              }
-            />
+                <Route
+                  path="/chat/:id"
+                  element={
+                    <ProtectedRoute>
+                      <Chat />
+                    </ProtectedRoute>
+                  }
+                />
 
-            <Route
-              path="/myCalendar"
-              element={
-                <ProtectedRoute>
-                  <MyCalendar />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-          </div>
+                <Route
+                  path="/myCalendar"
+                  element={
+                    <ProtectedRoute>
+                      <MyCalendar />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+          </EventsProvider>
         </MemoriesProvider>
       </FriendsProvider>
     </AuthProvider>

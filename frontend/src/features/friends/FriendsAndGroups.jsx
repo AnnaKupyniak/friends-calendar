@@ -186,8 +186,8 @@ export default function FriendsAndGroups() {
                     onClick={() => {
                       setActiveItem({ type: "group", id: group._id?.toString() });
                       onSelectGroup(group);
-                      if (location.pathname.startsWith('/group')) {
-                        navigate(`/group/${group._id}`);
+                      if (location.pathname.startsWith('/chat') || location.pathname.startsWith('/group')) {
+                        navigate(`/chat/${group._id}`);
                       }
                     }}
                   >

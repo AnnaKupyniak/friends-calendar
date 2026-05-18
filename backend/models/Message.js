@@ -6,13 +6,25 @@ const messageSchema = new mongoose.Schema({
         required: true
     },
     receiverId: {
-        type: mongoose.Schema.Types.ObjectId, ref: "User" ,
-        required: true
+        type: mongoose.Schema.Types.ObjectId, ref: "User",
+        required: false
+    },
+    groupId: {
+        type: mongoose.Schema.Types.ObjectId, ref: "Group",
+        required: false
     },
     text : {
         type: String,
-        required: true
+        required: false
+    },
+    imageUrl: {
+        type: String,
+        required: false
+    },
+    isEdited: {
+        type: Boolean,
+        default: false
     }
 },{ timestamps: true });
 
-module.exports = mongoose.model('Message', messageSchema)
+module.exports = mongoose.model('Message', messageSchema);
