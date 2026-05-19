@@ -8,7 +8,7 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.find().select('-password');
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -20,7 +20,7 @@ exports.getFriends = async (req, res) => {
     }).populate('users', 'username fullName avatar');
     res.json({ friendships });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -37,7 +37,7 @@ exports.getFriendRequests = async (req, res) => {
     
     res.json({ requests });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -46,7 +46,7 @@ exports.findFriend = async (req, res) => {
   let { query } = req.query;
 
   if (!query) {
-    return res.status(400).json({ message: 'Query is required' });
+    return res.status(400).json({ message: 'Пошуковий запит є обов’язковим' });
   }
 
   // Sanitize and limit query to prevent ReDoS attacks
@@ -55,7 +55,7 @@ exports.findFriend = async (req, res) => {
 
   try {
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'Користувача не знайдено' });
 
     const regex = new RegExp(escapedQuery, 'i');
     const results = await User.find({
@@ -68,7 +68,7 @@ exports.findFriend = async (req, res) => {
 
     res.json(results);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -78,7 +78,7 @@ exports.addFriend = async (req, res) => {
   try {
     const exists = await Friendship.findOne({ users: { $all: [req.user._id, friendId] } });
     if (exists) {
-      const msg = exists.status === 'pending' ? 'Request already pending' : 'Friendship already exists';
+      const msg = exists.status === 'pending' ? 'Запит уже очікує підтвердження' : 'Дружба вже існує';
       return res.status(400).json({ message: msg });
     }
 
@@ -88,9 +88,9 @@ exports.addFriend = async (req, res) => {
       status: 'pending'
     })
 
-    res.status(201).json({ message: 'Friend request sent', friendship });
+    res.status(201).json({ message: 'Запит у друзі надіслано', friendship });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -102,14 +102,14 @@ exports.acceptFriendRequest = async (req, res) => {
       status: 'pending'
     });
 
-    if (!friendship) return res.status(404).json({ message: 'Request not found' });
+    if (!friendship) return res.status(404).json({ message: 'Запит не знайдено' });
 
     friendship.status = 'accepted';
     await friendship.save();
 
-    res.json({ message: 'Friend request accepted', friendship });
+    res.json({ message: 'Запит у друзі прийнято', friendship });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -121,11 +121,11 @@ exports.declineFriendRequest = async (req, res) => {
       status: 'pending'
     });
 
-    if (!friendship) return res.status(404).json({ message: 'Request not found' });
+    if (!friendship) return res.status(404).json({ message: 'Запит не знайдено' });
 
-    res.json({ message: 'Friend request declined' });
+    res.json({ message: 'Запит у друзі відхилено' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -133,12 +133,12 @@ exports.removeFriend = async (req, res) => {
   const { friendId } = req.query;
   try {
     const friendship = await Friendship.findOneAndDelete({ users: { $all: [req.user._id, friendId] } });
-    if (!friendship) return res.status(404).json({ message: 'Friendship not found' });
+    if (!friendship) return res.status(404).json({ message: 'Дружбу не знайдено' });
     await Memory.deleteMany({entity: friendship._id, entityType: 'Friendship'})
 
-    res.json({ message: 'Friend removed' });
+    res.json({ message: 'Друга видалено' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 }
 
@@ -149,11 +149,11 @@ exports.addCategoryToFriendship = async (req, res) => {
 
     const friendship = await Friendship.findById(friendshipId);
     if (!friendship) {
-      return res.status(404).json({ message: 'Friendship not found' });
+      return res.status(404).json({ message: 'Дружбу не знайдено' });
     }
 
     if (!friendship.users.includes(req.user._id)) {
-      return res.status(403).json({ message: 'Not authorized' });
+      return res.status(403).json({ message: 'Недостатньо прав доступу' });
     }
 
     if (!friendship.categories.includes(category)) {
@@ -162,11 +162,11 @@ exports.addCategoryToFriendship = async (req, res) => {
     }
 
     res.json({ 
-      message: 'Category added', 
+      message: 'Категорію додано', 
       categories: friendship.categories 
     });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };
 
@@ -174,7 +174,7 @@ exports.updateUser = async (req, res) => {
   try {
     const { fullName, username } = req.body;
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'Користувача не знайдено' });
 
     if (fullName !== undefined) user.fullName = fullName;
     if (username !== undefined) user.username = username;
@@ -182,6 +182,6 @@ exports.updateUser = async (req, res) => {
     await user.save();
     res.json({ user: { _id: user._id, username: user.username, fullName: user.fullName, avatar: user.avatar } });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Помилка сервера', error: err.message });
   }
 };

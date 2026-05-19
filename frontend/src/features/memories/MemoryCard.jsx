@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import { MemoriesContext } from "../../context/MemoriesContext";
 import Button from "../../components/Button/Button";
 import "./MemoryCard.css";
@@ -11,6 +11,8 @@ export default function MemoryCard({ memory }) {
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const imageContainerRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]); // Стан для нових файлів
 
   const [formData, setFormData] = useState({
@@ -82,23 +84,56 @@ export default function MemoryCard({ memory }) {
   const nextImage = () =>
     setCurrentImageIndex((prev) => (prev + 1) % imageUrls.length);
 
+  const handleImageClick = (e) => {
+    // If user clicks left half -> prev, right half -> next
+    const el = imageContainerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if (x < rect.width * 0.45) prevImage();
+    else if (x > rect.width * 0.55) nextImage();
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX == null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const dx = touchEndX - touchStartX;
+    const threshold = 40; // px
+    if (dx > threshold) prevImage();
+    else if (dx < -threshold) nextImage();
+    setTouchStartX(null);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowLeft") prevImage();
+    if (e.key === "ArrowRight") nextImage();
+  };
+
   return (
     <article className="memory-card">
       {imageUrls.length > 0 && (
-        <div className="memory-image">
+        <div
+          className="memory-image"
+          ref={imageContainerRef}
+          onClick={handleImageClick}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="region"
+          aria-label={`Галерея спогаду: зображення ${currentImageIndex + 1} з ${imageUrls.length}`}
+        >
           <img src={imageUrls[currentImageIndex]} alt={memory.title} />
 
           {imageUrls.length > 1 && (
             <div className="image-navigation">
-              <button className="img-nav-btn" onClick={prevImage}>
-                ‹
-              </button>
               <span className="image-counter">
                 {currentImageIndex + 1} / {imageUrls.length}
               </span>
-              <button className="img-nav-btn" onClick={nextImage}>
-                ›
-              </button>
             </div>
           )}
         </div>

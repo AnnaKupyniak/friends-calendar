@@ -4,7 +4,7 @@ const GroupSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Please add a group name'],
+      required: [true, 'Будь ласка, вкажіть назву групи'],
       trim: true,
       maxlength: [50, 'Name cannot be more than 50 characters']
     },

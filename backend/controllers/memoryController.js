@@ -11,33 +11,33 @@ exports.createMemory = async (req, res) => {
     if (!entityId || !entityType || !title || !description || !date || !place) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields: entityId, entityType, title, description, date, place'
+        message: 'Будь ласка, заповніть усі обов’язкові поля: entityId, entityType, title, description, date, place'
       });
     }
 
     if (!['Friendship', 'Group'].includes(entityType)) {
-      return res.status(400).json({ success: false, message: 'Invalid entityType. Must be "Friendship" or "Group"' });
+      return res.status(400).json({ success: false, message: 'Неправильний entityType. Має бути "Friendship" або "Group"' });
     }
 
     if (entityType === 'Friendship') {
       const friendship = await Friendship.findById(entityId);
       if (!friendship) {
-        return res.status(404).json({ success: false, message: 'Friendship not found' });
+        return res.status(404).json({ success: false, message: 'Дружбу не знайдено' });
       }
 
       const userId = req.user.id;
       if (!friendship.users.some(u => u.toString() === userId)) {
-        return res.status(403).json({ success: false, message: 'You are not part of this friendship' });
+        return res.status(403).json({ success: false, message: 'Ви не є учасником цієї дружби' });
       }
     } else if (entityType === 'Group') {
       const group = await Group.findById(entityId);
       if (!group) {
-        return res.status(404).json({ success: false, message: 'Group not found' });
+        return res.status(404).json({ success: false, message: 'Групу не знайдено' });
       }
 
       const userId = req.user.id;
       if (!group.members.some(u => u.toString() === userId)) {
-        return res.status(403).json({ success: false, message: 'You are not a member of this group' });
+        return res.status(403).json({ success: false, message: 'Ви не є учасником цієї групи' });
       }
     }
 
@@ -62,7 +62,7 @@ exports.createMemory = async (req, res) => {
     console.error('Error creating memory:', err);
     res.status(400).json({
       success: false,
-      message: 'Error creating memory',
+      message: 'Помилка створення спогаду',
       error: err.message
     });
   }
@@ -76,7 +76,7 @@ exports.createComment = async (req, res) => {
     if (!memoryId || !text?.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'memoryId and text are required'
+        message: 'Потрібні memoryId та текст'
       });
     }
 
@@ -84,7 +84,7 @@ exports.createComment = async (req, res) => {
     if (!memory) {
       return res.status(404).json({
         success: false,
-        message: 'Memory not found'
+        message: 'Спогад не знайдено'
       });
     }
 
@@ -103,7 +103,7 @@ exports.createComment = async (req, res) => {
     console.error(err);
     res.status(400).json({
       success: false,
-      message: 'Error creating comment',
+      message: 'Помилка створення коментаря',
       error: err.message
     });
   }
@@ -116,7 +116,7 @@ exports.getComments = async(req,res) =>{
     if (!memory) {
       return res.status(404).json({
         success: false,
-        message: 'Memory not found'
+        message: 'Спогад не знайдено'
       });
     }
 
@@ -126,7 +126,7 @@ exports.getComments = async(req,res) =>{
     console.error(err);
     res.status(400).json({
       success: false,
-      message: 'Error comment',
+      message: 'Помилка отримання коментарів',
       error: err.message
     });
   }
@@ -156,7 +156,7 @@ exports.getAllUserMemories = async (req, res) => {
 
     res.status(200).json({ success: true, data: memories });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error fetching memories', error: err.message });
+    res.status(500).json({ success: false, message: 'Помилка завантаження спогадів', error: err.message });
   }
 };
 
@@ -167,7 +167,7 @@ exports.getMemoriesForEntity = async (req, res) => {
     const memories = await Memory.find({ entity: entityId });
     res.status(200).json({ success: true, data: memories });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error fetching memories', error: err.message });
+    res.status(500).json({ success: false, message: 'Помилка завантаження спогадів', error: err.message });
   }
 };
 exports.updateMemory = async (req, res) => {
@@ -175,7 +175,7 @@ exports.updateMemory = async (req, res) => {
 
   try {
     const memory = await Memory.findById(memoryId);
-    if (!memory) return res.status(404).json({ success: false, message: 'Memory not found' });
+    if (!memory) return res.status(404).json({ success: false, message: 'Спогад не знайдено' });
 
     // --- Перевірка доступу (ваша логіка) ---
     let hasAccess = false;
@@ -187,7 +187,7 @@ exports.updateMemory = async (req, res) => {
       hasAccess = group && group.members.some(u => u.toString() === req.user._id.toString());
     }
 
-    if (!hasAccess) return res.status(403).json({ success: false, message: 'Not authorized' });
+    if (!hasAccess) return res.status(403).json({ success: false, message: 'Недостатньо прав доступу' });
 
     // --- Логіка оновлення фото ---
     if (req.files && req.files.length > 0) {
@@ -216,7 +216,7 @@ exports.updateMemory = async (req, res) => {
     res.status(200).json({ success: true, data: memory });
   } catch (err) {
     console.error('Update error:', err);
-    res.status(400).json({ success: false, message: 'Error updating memory', error: err.message });
+    res.status(400).json({ success: false, message: 'Помилка оновлення спогаду', error: err.message });
   }
 };
 
@@ -227,10 +227,10 @@ exports.deleteMemory = async (req, res) => {
   try {
     const memory = await Memory.findById(memoryId);
     if (!memory) {
-      return res.status(404).json({
-        success: false,
-        message: 'Memory not found'
-      });
+        return res.status(404).json({
+          success: false,
+          message: 'Спогад не знайдено'
+        });
     }
 
     let hasAccess = false;
@@ -248,31 +248,31 @@ exports.deleteMemory = async (req, res) => {
     }
 
     if (!entityExists) {
-      return res.status(404).json({
-        success: false,
-        message: 'Associated friendship or group no longer exists'
-      });
+        return res.status(404).json({
+          success: false,
+          message: 'Пов’язана дружба або група більше не існує'
+        });
     }
 
     if (!hasAccess) {
-      return res.status(403).json({
-        success: false,
-        message: 'You are not authorized to delete this memory'
-      });
+        return res.status(403).json({
+          success: false,
+          message: 'Ви не маєте дозволу видаляти цей спогад'
+        });
     }
 
     await Memory.findByIdAndDelete(memoryId);
 
     res.status(200).json({
       success: true,
-      message: 'Memory deleted successfully'
+      message: 'Спогад успішно видалено'
     });
 
   } catch (err) {
     console.error('Error deleting memory:', err);
     res.status(500).json({
       success: false,
-      message: 'Error deleting memory',
+      message: 'Помилка видалення спогаду',
       error: err.message
     });
   }
@@ -460,7 +460,7 @@ exports.getAllTags = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching tags',
+      message: 'Помилка завантаження тегів',
       error: err.message
     });
   }

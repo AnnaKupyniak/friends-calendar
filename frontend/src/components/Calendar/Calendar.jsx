@@ -83,6 +83,51 @@ export default function Calendar({ currentUser = null }) {
     [memories, entity, currentId, currentUser, friendships, groups]
   );
 
+  const getMemoryImage = useCallback(
+    (day) => {
+      if (!memories || !entity || !currentId) return null;
+      const dayStr = day.format("YYYY-MM-DD");
+      const dayMemories = memories.filter((m) => {
+        const memoryDate = dayjs(m.date).format("YYYY-MM-DD");
+        if (memoryDate !== dayStr) return false;
+        if (currentUser) {
+          return (
+            String(m.createdBy) === String(currentId) ||
+            String(m.entity) === String(currentId) ||
+            friendships.some((f) => String(f._id) === String(m.entity)) ||
+            groups.some((g) => String(g._id) === String(m.entity))
+          );
+        }
+        if (entity.type === "friend") {
+          return (
+            (m.entityType === "Friendship" || m.entityType === "User") &&
+            (String(m.entity) === String(currentId) ||
+              String(m.entityUserId) === String(currentId))
+          );
+        }
+        if (entity.type === "group") {
+          return (
+            m.entityType === "Group" && String(m.entity) === String(currentId)
+          );
+        }
+        return false;
+      });
+
+      const memoryWithImage = dayMemories.find(
+        (m) => m.imageUrl || (m.imageUrls && m.imageUrls.length > 0)
+      );
+      if (!memoryWithImage) return null;
+
+      const API_URL = import.meta.env.VITE_API_URL;
+      const baseUrl = API_URL.split("/api")[0];
+      const imgPath = memoryWithImage.imageUrl || memoryWithImage.imageUrls[0];
+      return imgPath.startsWith("http")
+        ? imgPath
+        : `${baseUrl}/${imgPath.replace(/^\/+/, "")}`;
+    },
+    [memories, entity, currentId, currentUser, friendships, groups]
+  );
+
   // Events for the selected entity
   const entityEventDates = useMemo(() => {
     if (!currentId || !entity) return new Map();
@@ -149,14 +194,24 @@ export default function Calendar({ currentUser = null }) {
               const hasEvent = !outsideCurrentMonth && entityEventDates.has(dateStr);
               const eventColors = hasEvent ? entityEventDates.get(dateStr) : [];
               const isFuture = !outsideCurrentMonth && day.isAfter(TODAY);
+              const memoryImage = !outsideCurrentMonth ? getMemoryImage(day) : null;
 
               return (
                 <div
                   className={`mycal-day-wrapper ${
                     hasMemory ? `has-memory intensity-${intensityLevel} ` : ""
-                  }${isSelected ? "selected " : ""}${
+                  }${memoryImage ? "has-photo-memory " : ""}${isSelected ? "selected " : ""}${
                     outsideCurrentMonth ? "outside" : ""
                   }${hasEvent ? " has-event" : ""}${isFuture ? " future-day" : ""}`}
+                  style={
+                    memoryImage
+                      ? {
+                          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)), url(${memoryImage})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : {}
+                  }
                 >
                   <PickersDay
                     {...other}
@@ -171,11 +226,13 @@ export default function Calendar({ currentUser = null }) {
                       background: "transparent !important",
                       color: outsideCurrentMonth
                         ? "rgba(110,90,133,0.3) !important"
-                        : isSelected || count >= 3
+                        : isSelected || count >= 3 || memoryImage
                         ? "#fff !important"
                         : "inherit",
                       "&:hover": {
-                        background: "rgba(89, 46, 131, 0.08) !important",
+                        background: memoryImage
+                          ? "transparent !important"
+                          : "rgba(89, 46, 131, 0.08) !important",
                       },
                       "&.Mui-selected": {
                         background: "transparent !important",

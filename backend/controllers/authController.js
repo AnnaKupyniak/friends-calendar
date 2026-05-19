@@ -22,16 +22,16 @@ exports.login = async(req,res) =>{
     const {email, password} = req.body;
 
     if(!email || !password){
-        return res.status(401).json({ message: 'Please provide an email and password' });
+        return res.status(401).json({ message: 'Будь ласка, вкажіть електронну пошту та пароль' });
     }
 
     const user = await User.findOne({email}).select('+password');
     if(!user){
-         return res.status(401).json({ message: 'Invalid' });
+         return res.status(401).json({ message: 'Користувача не знайдено' });
     }
     const isMatch = await user.matchPassword(password);
     if(!isMatch){
-        return res.status(401).json({ message: 'Password is incorrect' });
+        return res.status(401).json({ message: 'Невірний пароль' });
     }
     sendTokenResponse(user, 200, res);
 }
@@ -41,15 +41,15 @@ exports.logout = async (req, res) => {
     expires: new Date(Date.now() + 5 * 1000), 
     httpOnly: true,
   });
-  res.status(200).json({ success: true, message: 'Logged out successfully' });
+    res.status(200).json({ success: true, message: 'Вихід виконано успішно' });
 };
 
 exports.deleteUser = async(req,res) => {
     const user = await User.findByIdAndDelete(req.user.id);
     if(!user){
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'Користувача не знайдено' });
     }
-    res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: 'Користувача успішно видалено' });
 }
 
 exports.getMe = async(req,res) => {
@@ -75,17 +75,17 @@ exports.updatePassword = async (req, res) => {
     const user = await User.findById(req.user.id).select('+password');
     
     if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'Користувача не знайдено' });
     }
 
     if (!req.body.currentPassword || !req.body.newPassword) {
-        return res.status(400).json({ message: 'Please provide current and new password' });
+        return res.status(400).json({ message: 'Будь ласка, вкажіть поточний і новий пароль' });
     }
 
     const isMatch = await user.matchPassword(req.body.currentPassword);
 
     if (!isMatch) {
-        return res.status(401).json({ message: 'Password is incorrect' });
+        return res.status(401).json({ message: 'Невірний пароль' });
     }
 
     user.password = req.body.newPassword;

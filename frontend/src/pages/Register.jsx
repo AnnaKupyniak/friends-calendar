@@ -71,7 +71,7 @@ export default function Register() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <h1>Friends Calendar</h1>
+          <h1>Календар друзів</h1>
           <p>Створіть свій акаунт</p>
         </div>
 

@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(
     } else if (status === 403) {
       // Forbidden - user doesn't have permission
       if (authContextRef) {
-        authContextRef.setError('Access denied. You do not have permission to perform this action.');
+        authContextRef.setError('Доступ заборонено. У вас немає дозволу на цю дію.');
       }
     }
 

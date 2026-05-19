@@ -15,13 +15,13 @@ export default function Header() {
     <header className="app-header">
       <div className="header-inner">
         <Link to="/" className="logo" onClick={closeMenu}>
-          Friends Calendar
+          Календар друзів
         </Link>
 
         <button 
           className={`menu-toggle ${isMenuOpen ? 'active' : ''}`} 
           onClick={toggleMenu}
-          aria-label="Toggle menu"
+          aria-label="Відкрити меню"
         >
           <span></span>
           <span></span>
@@ -72,4 +72,4 @@ export default function Header() {
       </div>
     </header>
   );
-}
+}

@@ -23,8 +23,7 @@ body {
   gap: var(--space-lg);
   width: 320px;
   flex-shrink: 0;
-  position: sticky;
-  top: calc(var(--header-height) + var(--space-xl));
+  height: fit-content;
 }
 
 .home-main {

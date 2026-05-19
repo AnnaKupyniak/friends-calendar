@@ -37,7 +37,7 @@ exports.createGroup = async (req, res) => {
         console.error('Error creating group:', err);
         res.status(400).json({
             success: false,
-            message: 'Error creating group',
+            message: 'Помилка створення групи',
             error: err.message
         });
     }
@@ -54,13 +54,13 @@ exports.getGroupById = async (req, res) => {
         if (!group) {
             return res.status(404).json({
                 success: false,
-                message: 'Group not found'
+                message: 'Групу не знайдено'
             });
         }
         if (!group.members.some(m => m._id.toString() === req.user.id)) {
             return res.status(403).json({
                 success: false,
-                message: 'You are not a member of this group'
+                message: 'Ви не є учасником цієї групи'
             });
         }
 
@@ -72,7 +72,7 @@ exports.getGroupById = async (req, res) => {
         console.error('Error fetching group:', err);
         res.status(500).json({
             success: false,
-            message: 'Error fetching group',
+            message: 'Помилка завантаження групи',
             error: err.message
         });
     }
@@ -97,7 +97,7 @@ exports.getAllGroups = async (req, res) => {
         console.error('Error fetching groups:', err);
         res.status(500).json({
             success: false,
-            message: 'Error fetching groups',
+            message: 'Помилка завантаження груп',
             error: err.message
         });
     }
@@ -112,14 +112,14 @@ exports.updateGroup = async (req, res) => {
         if (!group) {
             return res.status(404).json({
                 success: false,
-                message: 'Group not found'
+                message: 'Групу не знайдено'
             });
         }
 
         if (!group.members.some(m => m._id.toString() === req.user.id)) {
             return res.status(403).json({
                 success: false,
-                message: 'You are not a member of this group'
+                message: 'Ви не є учасником цієї групи'
             });
         }
 
@@ -144,7 +144,7 @@ exports.updateGroup = async (req, res) => {
         console.error('Error updating group:', err);
         res.status(500).json({
             success: false,
-            message: 'Error updating group',
+            message: 'Помилка оновлення групи',
             error: err.message
         });
     }
@@ -159,7 +159,7 @@ exports.deleteGroup = async (req, res) => {
         if (!group) {
             return res.status(404).json({
                 success: false,
-                message: 'Group not found'
+                message: 'Групу не знайдено'
             });
         }
 
@@ -167,7 +167,7 @@ exports.deleteGroup = async (req, res) => {
         if (group.owner.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
-                message: 'Only group owner can delete the group'
+                message: 'Видалити групу може лише її власник'
             });
         }
 
@@ -175,13 +175,13 @@ exports.deleteGroup = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Group deleted successfully'
+            message: 'Групу успішно видалено'
         });
     } catch (err) {
         console.error('Error deleting group:', err);
         res.status(500).json({
             success: false,
-            message: 'Error deleting group',
+            message: 'Помилка видалення групи',
             error: err.message
         });
     }
@@ -197,7 +197,7 @@ exports.addMembers = async (req, res) => {
         if (!group) {
             return res.status(404).json({
                 success: false,
-                message: 'Group not found'
+                message: 'Групу не знайдено'
             });
         }
 
@@ -205,7 +205,7 @@ exports.addMembers = async (req, res) => {
         if (!group.members.some(m => m._id.toString() === req.user.id)) {
             return res.status(403).json({
                 success: false,
-                message: 'You are not a member of this group'
+                message: 'Ви не є учасником цієї групи'
             });
         }
 
@@ -226,7 +226,7 @@ exports.addMembers = async (req, res) => {
         console.error('Error adding members:', err);
         res.status(500).json({
             success: false,
-            message: 'Error adding members',
+            message: 'Помилка додавання учасників',
             error: err.message
         });
     }
@@ -241,7 +241,7 @@ exports.removeMember = async (req, res) => {
         if (!group) {
             return res.status(404).json({
                 success: false,
-                message: 'Group not found'
+                message: 'Групу не знайдено'
             });
         }
 
@@ -249,7 +249,7 @@ exports.removeMember = async (req, res) => {
         if (!group.members.some(m => m._id.toString() === req.user.id)) {
             return res.status(403).json({
                 success: false,
-                message: 'You are not a member of this group'
+                message: 'Ви не є учасником цієї групи'
             });
         }
 
@@ -268,7 +268,7 @@ exports.removeMember = async (req, res) => {
         console.error('Error removing member:', err);
         res.status(500).json({
             success: false,
-            message: 'Error removing member',
+            message: 'Помилка видалення учасника',
             error: err.message
         });
     }
@@ -282,7 +282,7 @@ exports.addCategoryToGroup = async (req, res) => {
         if (!category) {
             return res.status(400).json({
                 success: false,
-                message: 'Category is required'
+                message: 'Категорія є обов’язковою'
             });
         }
 
@@ -291,7 +291,7 @@ exports.addCategoryToGroup = async (req, res) => {
         if (!group) {
             return res.status(404).json({
                 success: false,
-                message: 'Group not found'
+                message: 'Групу не знайдено'
             });
         }
 
@@ -299,7 +299,7 @@ exports.addCategoryToGroup = async (req, res) => {
         if (!group.members.some(m => m._id.toString() === req.user.id)) {
             return res.status(403).json({
                 success: false,
-                message: 'You are not a member of this group'
+                message: 'Ви не є учасником цієї групи'
             });
         }
 
@@ -320,7 +320,7 @@ exports.addCategoryToGroup = async (req, res) => {
         console.error('Error adding category:', err);
         res.status(500).json({
             success: false,
-            message: 'Error adding category',
+            message: 'Помилка додавання категорії',
             error: err.message
         });
     }

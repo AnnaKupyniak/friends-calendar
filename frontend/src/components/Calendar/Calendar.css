@@ -2,9 +2,8 @@
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  padding: 24px;
+  padding: 15px;
   border: 1px solid var(--border);
-  margin-top: 24px;
 }
 
 /* Прибираємо стандартні бордери MUI */
@@ -18,11 +17,13 @@
 
 /* Прибираємо лише скролбари, не ховаючи контент */
 .MuiDateCalendar-root * {
-  scrollbar-width: none !important; /* Firefox */
+  scrollbar-width: none !important;
+  /* Firefox */
 }
 
 .MuiDateCalendar-root *::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, Edge */
+  display: none !important;
+  /* Chrome, Safari, Edge */
   width: 0 !important;
   height: 0 !important;
 }
@@ -34,22 +35,22 @@
 }
 
 .MuiPickersCalendarHeader-root {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 .MuiPickersCalendarHeader-label {
-    font-family: 'Manrope', sans-serif !important;
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
 }
 
 .MuiDayCalendar-header span {
-    font-family: 'Manrope', sans-serif !important;
-    font-weight: 700 !important;
-    color: var(--text-muted) !important;
-    text-transform: uppercase;
-    font-size: 0.7rem !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  font-size: 0.7rem !important;
 }
 
 /* Day Overrides for Shared Logic */
@@ -62,29 +63,45 @@
   align-items: center;
   justify-content: center;
   margin: 2px;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s, background 0.22s;
+}
+
+.mycal-day-wrapper.has-photo-memory {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(89, 46, 131, 0.15);
+  box-shadow: var(--shadow-sm);
+}
+
+.mycal-day-wrapper.has-photo-memory:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(89, 46, 131, 0.2);
+  z-index: 3;
 }
 
 /* ── Heatmap UI ── */
 .mycal-day-wrapper.intensity-1 {
-  background: linear-gradient(135deg, rgba(89, 46, 131, 0.05), rgba(89, 46, 131, 0.12));
+  background: linear-gradient(135deg, #F1E9FA, #E2D1F7);
+  border: 1px solid rgba(89, 46, 131, 0.15);
   border-radius: 12px;
 }
 
 .mycal-day-wrapper.intensity-2 {
-  background: linear-gradient(135deg, rgba(89, 46, 131, 0.15), rgba(89, 46, 131, 0.3));
+  background: linear-gradient(135deg, #D4BDFC, #B692F6);
+  border: 1px solid rgba(89, 46, 131, 0.25);
   border-radius: 12px;
 }
 
 .mycal-day-wrapper.intensity-3 {
-  background: linear-gradient(135deg, var(--accent-strong), #3d1a5c);
+  background: linear-gradient(135deg, #8C52FF, #592E83);
   border-radius: 12px;
 }
 
 .mycal-day-wrapper.selected {
   background: linear-gradient(135deg, var(--accent-strong), #3d1a5c) !important;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(89, 46, 131, 0.35);
-  transform: scale(1.05);
+  box-shadow: 0 0 0 2px var(--surface), 0 4px 16px rgba(89, 46, 131, 0.45);
+  transform: scale(1.08);
   z-index: 2;
 }
 
@@ -180,4 +197,4 @@
 /* ── Future day subtle indicator ── */
 .mycal-day-wrapper.future-day:not(.selected):not(.has-memory) {
   border-radius: 12px;
-}
+}

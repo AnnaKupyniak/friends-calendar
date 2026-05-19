@@ -470,6 +470,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s, background 0.22s;
+}
+
+.mycal-day-wrapper.has-photo-memory {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(89, 46, 131, 0.15);
+  box-shadow: var(--shadow-sm);
+}
+
+.mycal-day-wrapper.has-photo-memory:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(89, 46, 131, 0.2);
+  z-index: 3;
 }
 
 /* Event dots below day number */
@@ -494,25 +508,27 @@
 
 /* ── Heatmap UI ── */
 .mycal-day-wrapper.intensity-1 {
-  background: linear-gradient(135deg, rgba(89, 46, 131, 0.05), rgba(89, 46, 131, 0.12));
+  background: linear-gradient(135deg, #F1E9FA, #E2D1F7);
+  border: 1px solid rgba(89, 46, 131, 0.15);
   border-radius: 14px;
 }
 
 .mycal-day-wrapper.intensity-2 {
-  background: linear-gradient(135deg, rgba(89, 46, 131, 0.15), rgba(89, 46, 131, 0.3));
+  background: linear-gradient(135deg, #D4BDFC, #B692F6);
+  border: 1px solid rgba(89, 46, 131, 0.25);
   border-radius: 14px;
 }
 
 .mycal-day-wrapper.intensity-3 {
-  background: linear-gradient(135deg, var(--accent-strong), #3d1a5c);
+  background: linear-gradient(135deg, #8C52FF, #592E83);
   border-radius: 14px;
 }
 
 .mycal-day-wrapper.selected {
   background: linear-gradient(135deg, var(--accent-strong), #3d1a5c) !important;
   border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(89, 46, 131, 0.35);
-  transform: scale(1.05);
+  box-shadow: 0 0 0 2px var(--surface), 0 4px 16px rgba(89, 46, 131, 0.45);
+  transform: scale(1.08);
   z-index: 2;
 }
 

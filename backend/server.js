@@ -90,7 +90,7 @@ const rateLimit = (req, res, next) => {
   const timestamps = requestCounts.get(ip).filter(t => now - t < windowSize);
 
   if (timestamps.length >= maxRequests) {
-    return res.status(429).json({ message: 'Too many requests, please try again later' });
+    return res.status(429).json({ message: 'Забагато запитів, спробуйте ще раз пізніше' });
   }
 
   timestamps.push(now);

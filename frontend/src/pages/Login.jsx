@@ -34,7 +34,7 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <h1>Friends Calendar</h1>
+          <h1>Календар друзів</h1>
           <p>Вхід до вашого акаунту</p>
         </div>
 
@@ -47,12 +47,12 @@ export default function Login() {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-field">
-            <label className="auth-label">Email</label>
+            <label className="auth-label">Електронна пошта</label>
             <input
               name="email"
               type="email"
               className="auth-input"
-              placeholder="example@mail.com"
+              placeholder="name@example.com"
               onChange={handleChange}
               required
             />

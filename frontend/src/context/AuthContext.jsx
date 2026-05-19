@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
       await apiClient.post("/api/auth/login", data);
       await getMe();
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Login failed';
+      const errorMsg = err.response?.data?.message || err.message || 'Помилка входу';
       setError(errorMsg);
       setUser(null);
       throw err;
@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("selectedEntity");
       setUser(null);
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Logout failed';
+      const errorMsg = err.response?.data?.message || err.message || 'Помилка виходу';
       localStorage.removeItem("selectedEntity");
       setError(errorMsg);
       setUser(null);
@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
       await apiClient.delete("/api/auth/delete");
       setUser(null);
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Delete failed';
+      const errorMsg = err.response?.data?.message || err.message || 'Помилка видалення';
       setError(errorMsg);
     }
   }
@@ -84,7 +84,7 @@ export function AuthProvider({ children }) {
         setUser(res.data.data);
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Update failed';
+      const errorMsg = err.response?.data?.message || err.message || 'Помилка оновлення профілю';
       setError(errorMsg);
       throw err;
     }
@@ -96,7 +96,7 @@ export function AuthProvider({ children }) {
       await apiClient.put("/api/auth/updatepassword", data);
       await getMe();
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Password update failed';
+      const errorMsg = err.response?.data?.message || err.message || 'Помилка оновлення пароля';
       setError(errorMsg);
       throw err;
     }

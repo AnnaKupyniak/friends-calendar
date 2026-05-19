@@ -562,7 +562,7 @@ export default function Chat() {
                       
                       {msg.imageUrl && (
                         <div className="chat-image-container">
-                          <img src={`${API_URL}/uploads/${msg.imageUrl}`} alt="attachment" className="chat-image" />
+                          <img src={`${API_URL}/uploads/${msg.imageUrl}`} alt="вкладення" className="chat-image" />
                         </div>
                       )}
                       

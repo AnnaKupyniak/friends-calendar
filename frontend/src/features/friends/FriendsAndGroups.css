@@ -3,8 +3,10 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   width: 100%;
-  padding: 24px;
+  padding: 17px 20px;
   border: 1px solid var(--border);
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .friends-header {
@@ -92,17 +94,6 @@
   background: rgba(89, 46, 131, 0.06) !important;
 }
 
-.active-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 10%;
-  height: 80%;
-  width: 3px;
-  background: var(--accent-strong);
-  border-radius: 0 4px 4px 0;
-}
-
 .active-item span {
   color: var(--accent-strong);
   font-weight: 700;
@@ -113,7 +104,7 @@
 }
 
 .friends-list>div+div {
-  margin-top: 24px;
+  margin-top: 5px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
 }

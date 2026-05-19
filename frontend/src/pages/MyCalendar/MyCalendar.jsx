@@ -117,6 +117,24 @@ export default function MyCalendar() {
     };
   }, [myMemories, events, selectedMonth]);
 
+  const getMemoryImage = (day) => {
+    if (!user) return null;
+    const dateStr = day.format("YYYY-MM-DD");
+    const dayMemories = myMemories.filter(
+      (m) => dayjs(m.date).format("YYYY-MM-DD") === dateStr
+    );
+    const memoryWithImage = dayMemories.find(
+      (m) => m.imageUrl || (m.imageUrls && m.imageUrls.length > 0)
+    );
+    if (!memoryWithImage) return null;
+
+    const baseUrl = API_URL.split("/api")[0];
+    const imgPath = memoryWithImage.imageUrl || memoryWithImage.imageUrls[0];
+    return imgPath.startsWith("http")
+      ? imgPath
+      : `${baseUrl}/${imgPath.replace(/^\/+/, "")}`;
+  };
+
   const handleDayClick = (day) => {
     if (selectedDate && day.isSame(selectedDate, "day")) {
       setSelectedDate(null);
@@ -294,15 +312,26 @@ export default function MyCalendar() {
                       const intensityLevel = count > 3 ? 3 : count;
                       const eventColors = hasEvent ? eventDates.get(dateStr) : [];
 
+                      const memoryImage = !outsideCurrentMonth ? getMemoryImage(day) : null;
+
                       return (
                         <div
                           className={`mycal-day-wrapper ${
                             hasMemory
                               ? `has-memory intensity-${intensityLevel} `
                               : ""
-                          }${isSelected ? "selected " : ""}${
+                          }${memoryImage ? "has-photo-memory " : ""}${isSelected ? "selected " : ""}${
                             outsideCurrentMonth ? "outside" : ""
                           }${hasEvent ? " has-event" : ""}`}
+                          style={
+                            memoryImage
+                              ? {
+                                  backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)), url(${memoryImage})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                }
+                              : {}
+                          }
                         >
                           <PickersDay
                             {...other}
@@ -317,12 +346,13 @@ export default function MyCalendar() {
                               background: "transparent !important",
                               color: outsideCurrentMonth
                                 ? "rgba(110,90,133,0.3) !important"
-                                : isSelected || count >= 3
+                                : isSelected || count >= 3 || memoryImage
                                 ? "#fff !important"
                                 : "inherit",
                               "&:hover": {
-                                background:
-                                  "rgba(89, 46, 131, 0.08) !important",
+                                background: memoryImage
+                                  ? "transparent !important"
+                                  : "rgba(89, 46, 131, 0.08) !important",
                               },
                               "&.Mui-selected": {
                                 background: "transparent !important",
